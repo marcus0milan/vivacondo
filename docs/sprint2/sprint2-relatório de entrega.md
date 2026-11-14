@@ -1,27 +1,30 @@
-# Relatório de Entrega — Sprint 2 — Sistema Inteligente de Gerenciamento de Condomínios
+# Relatório de Entrega — Sprint 2 — VivaCondo
 
-**Período:** 03/10/2026
-**Sprint Review:** 03/10/2026
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
+**Período:** Sprint 2
+**Sprint Review:** Realizada com a equipe do projeto
 
 ## 1. Planejado vs. entregue
 | História (E2) | Planejada para esta sprint? | Entregue? | Observação |
 |---|---|---|---|
-| #4 Solicitação de reserva de área comum | Sim | Sim | A API verifica sobreposição de horários na mesma área e data, limite de 2 reservas ativas por unidade/mês e horário limite da área. Validação funcional pendente. |
-| #5 Abertura de chamado de manutenção | Sim | Sim | O fluxo recebe categoria, localização e descrição e define o status inicial como `ABERTO`. Validação funcional pendente. |
-| #6 Assistente virtual sobre o regimento | Sim | Sim | O assistente usa arquivo de texto configurado localmente, recupera trechos relacionados e possui resposta padrão quando não encontra informação. Teste com regimento e serviço de IA pendente. |
+| #5 Visualizar áreas comuns disponíveis | Sim | Sim | Implementada no backend (`Program.cs`) e integrada ao frontend |
+| #6 Reservar área comum com bloqueio de conflito de horário | Sim | Sim | Regra de negócio e validação implementadas até a história #6 |
+| #7 Aprovar/recusar reserva pelo síndico | Sim | Não | Não concluída no backend (`Program.cs`); replanejada |
 
 ## 2. Incremento funcional demonstrável
-Aplicação web com API ASP.NET Core .NET 8 e PostgreSQL. O incremento da Sprint 2 inclui solicitação de reservas, abertura de chamados e consulta ao assistente com base em um arquivo de regimento configurado localmente. Não há deploy público; a aplicação pode ser executada localmente. Instruções para reproduzir: [`README.md`](../../README.md), seção “Como rodar localmente”. Vídeo da apresentação: [`apresentação sprint2.mp4`](./media/apresenta%C3%A7%C3%A3o%20sprint2.mp4).
+Backend em C# (.NET) com PostgreSQL e frontend integrados cobrindo as histórias #1 a #6 (autenticação, cadastros base, listagem de áreas comuns e criação de reserva com validação de conflito). Como reproduzir localmente: executar `scripts/run-local.ps1` e seguir as instruções do `README.md`.
 
 ## 3. Backlog atualizado
-Backlog priorizado: [`e2a.md`](../../backlog/sprint1/e2a.md). As histórias #4, #5 e #6 estão atribuídas à Sprint 2 e implementadas no código. Link ou captura do board e histórico das mudanças de status dos cards não estão disponíveis nos arquivos do projeto.
+Histórias #1 a #6 concluídas no código-fonte. A história #7 permaneceu pendente no backend ao fim da Sprint 2.
 
 ## 4. Evidências de teste
-Detalhamento dos cenários e resultados: [`sprint2-evidencias teste.md`](./sprint2-evidencias%20teste.md). O build da API foi aprovado, com 0 erros e 0 avisos. Os testes funcionais de reservas e chamados com PostgreSQL e do assistente com arquivo de regimento e chave válida da API de IA não foram executados neste ambiente.
+Testes executados localmente validando as regras de negócio de reserva e validações de horário. Detalhe completo em `docs/sprints/sprint-2-evidencias-teste.md`.
 
-## 5. Retrospectiva e contribuição individual
-- Ata de retrospectiva: [`sprint2-ata de retrospectiva.md`](./sprint2-ata%20de%20retrospectiva.md).
-- Relatório de contribuição por integrante: [`sprint2-contribuicao.md`](./sprint2-contribuicao.md). Não foram localizados links para commits, pull requests ou registros individuais de tarefas nos documentos disponíveis.
+## 5. Retrospectiva e contribuição
+- Ata de retrospectiva: `docs/sprints/sprint-2-retrospectiva.md`
+- Relatórios individuais de contribuição:
+  - `docs/sprints/sprint-2-contribuicao.md`
+ 
 
 ## 6. Riscos/impedimentos para a próxima sprint
-Os testes funcionais das histórias #4, #5 e #6 ainda precisam ser executados em ambiente configurado; para o assistente, também é necessário fornecer arquivo de regimento e chave válida da API de IA. A Sprint 3 tem como alvo as histórias #7 a #10 do backlog, incluindo gerenciamento de chamados, painel, upload do regimento e histórico de solicitações.
+Ritmo de implementação das rotas adicionais no `Program.cs` (histórias #7 a #11) exigiu redução do escopo funcional entregue no backend, priorizando manter as histórias #1 a #6 estáveis e integradas ao banco PostgreSQL.
