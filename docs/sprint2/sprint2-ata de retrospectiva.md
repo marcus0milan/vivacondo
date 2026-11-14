@@ -21,4 +21,4 @@
 | Ação | Responsável |
 |---|---|
 | Padronizar retorno de erros da API em JSON com `{ erro, codigo, detalhes }` | Guilherme Rastelli Fernandes |
-| Preparar massa de dados (seed) maior para testar o dashboard e alertas da Sprint 3 | João Cardoso |
+| Preparar massa de dados (seed) maior para testar o dashboard e alertas da Sprint 3 | Felipe Savegnago Pires e Marcus Vinicius Milan |

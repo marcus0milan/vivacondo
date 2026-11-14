@@ -1,7 +1,7 @@
 # Termo de Aceite do Cliente — VivaCondo
 
 **Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047) – Felipe Savegnago Pires (RA 2840482421034) – Marcus Vinicius Milan (RA 2840482421001)
-**Cliente/PO:**  Prof. Lucas Baggio Figueira
+**Cliente/PO:**  
 **Data:** 06/11/2026
 
 ## 1. Escopo avaliado (comparado ao Termo de Aceite do Projeto — E2b)

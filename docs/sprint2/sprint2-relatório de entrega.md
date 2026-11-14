@@ -1,7 +1,7 @@
 # Relatório de Entrega — Sprint 2 — VivaCondo
 
 **Período:** 19/09/2026 a 02/10/2026
-**Sprint Review:** 02/10/2026, com o professor Lucas Baggio Figueira
+**Sprint Review:** 
 
 ## 1. Planejado vs. entregue
 | História (E2) | Planejada para esta sprint? | Entregue? | Observação |

@@ -1,7 +1,7 @@
 # Relatório de Entrega — Sprint 4 — VivaCondo
 
 **Período:** 17/10/2026 a 30/10/2026
-**Sprint Review:** 30/10/2026, com o professor Lucas Baggio Figueira
+**Sprint Review:** 
 
 ## 1. Planejado vs. entregue
 | História (E2) | Planejada para esta sprint? | Entregue? | Observação |
@@ -21,7 +21,7 @@ Adicionados testes de segurança (bloqueio de acesso não autorizado entre perfi
 
 ## 5. Retrospectiva e contribuição individual
 - Ata de retrospectiva: `docs/sprints/sprint-4-retrospectiva.md`
-- Relatórios individuais de contribuição: `docs/sprints/sprint-4-contribuicao-{guilherme,joao,felipe,marcus}.md`
+- Relatórios individuais de contribuição: `docs/sprints/sprint-4-contribuicao-{guilherme,felipe,marcus}.md`
 
 ## 6. Riscos/impedimentos para a próxima sprint
 Nenhum impedimento técnico bloqueante. O foco da Semana 13 (E9) será a execução do roteiro de aceitação e recolha do Termo de Aceite do Cliente.

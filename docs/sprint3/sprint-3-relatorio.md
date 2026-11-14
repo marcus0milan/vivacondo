@@ -1,7 +1,7 @@
 # Relatório de Entrega — Sprint 3 — VivaCondo
 
 **Período:** 03/10/2026 a 16/10/2026
-**Sprint Review:** 16/10/2026, com o professor Lucas Baggio Figueira
+**Sprint Review:** 
 
 ## 1. Planejado vs. entregue
 | História (E2) | Planejada para esta sprint? | Entregue? | Observação |
@@ -22,7 +22,7 @@ Adicionados testes para a consulta agregada do painel (`GROUP BY`), abertura de 
 
 ## 5. Retrospectiva e contribuição individual
 - Ata de retrospectiva: `docs/sprints/sprint-3-retrospectiva.md`
-- Relatórios individuais de contribuição: `docs/sprints/sprint-3-contribuicao-{guilherme,joao,felipe,marcus}.md`
+- Relatórios individuais de contribuição: `docs/sprints/sprint-3-contribuicao-{guilherme,felipe,marcus}.md`
 
 ## 6. Riscos/impedimentos para a próxima sprint
 Preparação do ambiente de produção (Render/Vercel) e configuração de variáveis de ambiente e CORS para o deploy público final na Sprint 4.
