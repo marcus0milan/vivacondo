@@ -19,7 +19,7 @@ Sistema funcional cobrindo as histórias #1 a #6 integradas entre Frontend, API 
 ## 4. Evidências de teste
 6 testes unitários reais implementados e passando localmente (`CT07`, `CT08`, `CT09`, `CT10`, `CT15`, `CT16`). Detalhes em `docs/sprints/sprint-4-evidencias-teste.md`.
 
-## 5. Retrospectiva e contribuição individual
+## 5. Retrospectiva e contribuição
 - Ata de retrospectiva: `docs/sprints/sprint-4-retrospectiva.md`
 - Relatórios individuais de contribuição:
   - `docs/sprints/sprint-4-contribuicao.md`

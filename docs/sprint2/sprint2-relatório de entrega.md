@@ -20,7 +20,7 @@ Histórias #1 a #6 concluídas no código-fonte. A história #7 permaneceu pende
 ## 4. Evidências de teste
 Testes executados localmente validando as regras de negócio de reserva e validações de horário. Detalhe completo em `docs/sprints/sprint-2-evidencias-teste.md`.
 
-## 5. Retrospectiva e contribuição individual
+## 5. Retrospectiva e contribuição
 - Ata de retrospectiva: `docs/sprints/sprint-2-retrospectiva.md`
 - Relatórios individuais de contribuição:
   - `docs/sprints/sprint-2-contribuicao.md`
