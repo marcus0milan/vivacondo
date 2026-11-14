@@ -1,16 +1,226 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f3f5f1" />
-    <meta name="description" content="Gestão de áreas comuns, reservas e chamados do VivaCondo." />
-    <title>VivaCondo</title>
-    <link rel="stylesheet" href="./styles.css" />
-    <script src="./sprint1.js" defer></script>
-  </head>
-  <body>
-    <main id="app" aria-live="polite"></main>
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VivaCondo — Sistema de Gestão Condominial (MVP Sprints 1–4)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>🏢 VivaCondo</h1>
+      <span class="badge">MVP · Sprints 1 a 4 (E5–E8)</span>
+    </div>
+    <div class="profile-switcher">
+      <label for="perfilAtivo">Perfil Logado:</label>
+      <select id="perfilAtivo">
+        <option value="morador">👤 Morador (Guilherme - Bloco A / 101)</option>
+        <option value="sindico">🔑 Síndico / Administrador</option>
+      </select>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="tab-sprint1">Sprint 1: Unidades & Áreas</button>
+    <button class="tab-btn" data-tab="tab-sprint2">Sprint 2: Reservas (E6)</button>
+    <button class="tab-btn" data-tab="tab-sprint3">Sprint 3: Ocorrências (E7)</button>
+    <button class="tab-btn" data-tab="tab-sprint4" id="btnTabPainel">Sprint 3/4: Painel do Síndico & CSV (E7/E8)</button>
+  </nav>
+
+  <main class="container">
+    <div id="feedbackMsg" class="feedback hidden"></div>
+
+    <!-- ==================== SPRINT 1 (E5) ==================== -->
+    <section id="tab-sprint1" class="tab-content active">
+      <div class="grid-2">
+        <div class="card">
+          <h2>Áreas Comuns Disponíveis (História #5)</h2>
+          <p class="muted">Áreas ativas cadastradas para reserva no condomínio.</p>
+          <table class="table" id="tabelaAreas">
+            <thead>
+              <tr>
+                <th>Área Comum</th>
+                <th>Capacidade</th>
+                <th>Taxa (R$)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="card sindico-only">
+          <h2>Cadastrar Nova Área Comum (Síndico)</h2>
+          <form id="formNovaArea">
+            <label>Nome da Área
+              <input type="text" id="areaNome" placeholder="Ex.: Espaço Pet / Cinema" required />
+            </label>
+            <label>Capacidade Máxima (pessoas)
+              <input type="number" id="areaCapacidade" min="1" value="20" required />
+            </label>
+            <label>Taxa de Uso (R$)
+              <input type="number" id="areaTaxa" min="0" step="0.01" value="50.00" required />
+            </label>
+            <button type="submit" class="btn-primary">Cadastrar Área</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SPRINT 2 (E6) ==================== -->
+    <section id="tab-sprint2" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <h2>Solicitar Reserva de Área Comum (História #6)</h2>
+          <p class="muted">Regra de negócio: o sistema bloqueia automaticamente conflitos de data e horário na mesma área.</p>
+          <form id="formNovaReserva">
+            <label>Área Comum
+              <select id="resAreaId" required></select>
+            </label>
+            <div class="row-2">
+              <label>Bloco
+                <select id="resBloco" required>
+                  <option value="Bloco A">Bloco A</option>
+                  <option value="Bloco B">Bloco B</option>
+                  <option value="Bloco C">Bloco C</option>
+                </select>
+              </label>
+              <label>Unidade / Apto
+                <input type="text" id="resUnidade" value="101" required />
+              </label>
+            </div>
+            <label>Morador Responsável
+              <input type="text" id="resMorador" value="Guilherme Rastelli" required />
+            </label>
+            <label>Data da Reserva
+              <input type="date" id="resData" value="2026-11-20" required />
+            </label>
+            <div class="row-2">
+              <label>Hora Início
+                <input type="time" id="resHoraInicio" value="19:00" required />
+              </label>
+              <label>Hora Fim
+                <input type="time" id="resHoraFim" value="22:00" required />
+              </label>
+            </div>
+            <button type="submit" class="btn-primary">Solicitar Reserva</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Reservas Registradas (Histórias #7 e #10)</h2>
+          <p class="muted">O perfil Síndico pode aprovar ou recusar reservas pendentes (recusa exige justificativa).</p>
+          <table class="table" id="tabelaReservas">
+            <thead>
+              <tr>
+                <th>Área</th>
+                <th>Unidade</th>
+                <th>Data / Horário</th>
+                <th>Status</th>
+                <th>Ação (Síndico)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SPRINT 3 (E7) ==================== -->
+    <section id="tab-sprint3" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <h2>Abrir Nova Ocorrência / Chamado (História #9)</h2>
+          <form id="formNovaOcorrencia">
+            <label>Título / Descrição Curta
+              <input type="text" id="ocTitulo" placeholder="Ex.: Portão da garagem travando" required />
+            </label>
+            <div class="row-2">
+              <label>Categoria
+                <select id="ocCategoria" required>
+                  <option value="Manutenção">Manutenção</option>
+                  <option value="Elétrica">Elétrica</option>
+                  <option value="Hidráulica">Hidráulica</option>
+                  <option value="Convivência">Convivência / Barulho</option>
+                  <option value="Segurança">Segurança</option>
+                </select>
+              </label>
+              <label>Prazo Limite Estimado
+                <input type="date" id="ocPrazo" value="2026-11-28" required />
+              </label>
+            </div>
+            <div class="row-2">
+              <label>Bloco
+                <select id="ocBloco" required>
+                  <option value="Bloco A">Bloco A</option>
+                  <option value="Bloco B">Bloco B</option>
+                  <option value="Bloco C">Bloco C</option>
+                </select>
+              </label>
+              <label>Unidade
+                <input type="text" id="ocUnidade" value="101" required />
+              </label>
+            </div>
+            <label>Morador
+              <input type="text" id="ocMorador" value="Guilherme Rastelli" required />
+            </label>
+            <button type="submit" class="btn-primary">Registrar Ocorrência</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Histórico e Tratamento de Ocorrências (História #10)</h2>
+          <table class="table" id="tabelaOcorrencias">
+            <thead>
+              <tr>
+                <th>Ocorrência</th>
+                <th>Local</th>
+                <th>Prazo</th>
+                <th>Status / Resposta</th>
+                <th>Ação (Síndico)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SPRINT 3 & 4 (E7 / E8) ==================== -->
+    <section id="tab-sprint4" class="tab-content">
+      <div class="alert-box" id="boxAlertas">
+        <h3>⚠️ Alertas Automáticos de Vencimento / Pendências (≤ 30 dias) — História #9</h3>
+        <ul id="listaAlertas"></ul>
+      </div>
+
+      <div class="card">
+        <div class="header-actions">
+          <div>
+            <h2>Painel Analítico do Síndico — Consulta Agregada por Bloco (História #8)</h2>
+            <p class="muted">Agrupamento em tempo real (GROUP BY Bloco) consolidando ocorrências e reservas ativas.</p>
+          </div>
+          <button id="btnExportarCSV" class="btn-secondary">📥 Exportar Relatório CSV (Sprint 4 - #11)</button>
+        </div>
+
+        <div class="kpi-row" id="kpiContainer"></div>
+
+        <table class="table" id="tabelaAgregada">
+          <thead>
+            <tr>
+              <th>Bloco</th>
+              <th>Total de Ocorrências</th>
+              <th>Ocorrências Abertas / Em Análise</th>
+              <th>Ocorrências Resolvidas</th>
+              <th>Reservas Ativas (Aprovadas/Pendentes)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="sprint1.js"></script>
+</body>
 </html>
