@@ -1,24 +1,23 @@
-# Ata de Retrospectiva — Sprint 2 — VivaCondo 
+# Ata de Retrospectiva — Sprint 2 — VivaCondo
 
-**Data:** 02/10/2026
-**Presentes:** Guilherme Rastelli Fernandes (RA 2840482421047) – Felipe Savegnago Pires (RA 2840482421034) – Marcus Vinicius Milan (RA 2840482421001)
+**Data:** Registro consolidado da Sprint 2
+**Presentes:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
 
 ## 1. Ações da retrospectiva anterior — foram aplicadas?
 | Ação decidida | Aplicada? | Evidência/comentário |
 |---|---|---|
-| Padronizar validação de campos obrigatórios no backend e frontend | Sim | Aplicado nos endpoints e formulários de áreas comuns e reservas (PR #11) |
-| Realizar merges semanais na branch `main` para evitar conflitos | Sim | Merges realizados nas duas semanas da Sprint 2 sem conflitos críticos |
+| Integrar frontend com os endpoints da API e banco PostgreSQL | Sim | Fluxo das histórias #1 a #6 integrado em `Program.cs` e `frontend/` |
 
 ## 2. O que funcionou bem
-- A divisão clara entre quem desenvolvia a regra de conflito de datas no backend e quem criava o ecrã de reservas no frontend acelerou a entrega.
-- Revisão rápida de Pull Requests no mesmo dia em que eram abertos.
+- O backend em .NET + PostgreSQL construído para as histórias #1 a #6 ficou funcional e integrado com o frontend.
+- A validação de conflito de reservas foi testada e validada.
 
 ## 3. O que não funcionou
-- O tratamento de fuso horário nas datas de reserva gerou falsos positivos nos primeiros testes locais.
-- Algumas mensagens de erro da API estavam genéricas e dificultaram a exibição clara no frontend.
+- A história #7 não conseguiu ser finalizada no `Program.cs` dentro do prazo da sprint.
+- A documentação das entregas acumulou para o fechamento na branch `feature/docs-sprint-2`.
 
 ## 4. Ações para a próxima sprint
 | Ação | Responsável |
 |---|---|
-| Padronizar retorno de erros da API em JSON com `{ erro, codigo, detalhes }` | Guilherme Rastelli Fernandes |
-| Preparar massa de dados (seed) maior para testar o dashboard e alertas da Sprint 3 | Felipe Savegnago Pires e Marcus Vinicius Milan |
+| Consolidar toda a documentação pendente do repositório com transparência sobre o escopo entregue (#1 a #6) | Guilherme Rastelli Fernandes |
+| Manter a estabilidade da API e do banco de dados para a demonstração das funcionalidades prontas | Felipe Savegnago Pires e Marcus Vinicius Milan |
