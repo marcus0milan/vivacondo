@@ -1,11 +1,11 @@
-# Evidências de Teste — Sprint 3 — VivaCondo
+# Evidências de Teste — Sprint 4 — VivaCondo
+
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
 
 | ID | Caso de teste | Tipo | Resultado | Evidência |
 |---|---|---|---|---|
-| CT10 | Consulta agregada do painel do síndico agrupa ocorrências e reservas por bloco e categoria | Integração | Passou | `tests/dashboard.test.js` — Retorno validado contra o seed do banco |
-| CT11 | Morador abre ocorrência vinculada à sua unidade com validação de campos obrigatórios | Unitário + Integração | Passou | `tests/ocorrencias.test.js` — Registo criado com status inicial `aberta` |
-| CT12 | Alerta de ocorrências pendentes há mais de 7 dias / manutenções a vencer em 30 dias | Unitário | Passou | `tests/dashboard.test.js` — Cálculo de datas validado |
-| CT13 | Morador visualiza apenas as suas próprias ocorrências e reservas com justificativa | Integração | Passou | `tests/ocorrencias.test.js` — Isolamento de dados por perfil validado |
+| CT15 | Sanitização de tags HTML contra XSS básico | Unitário | Passou | `tests/vivacondo.test.js` |
+| CT16 | Geração de estrutura CSV a partir de dados agregados | Unitário | Passou | `tests/vivacondo.test.js` |
 
 ## Cobertura automatizada nesta sprint
-CI reporta 22 testes automatizados, 100% passando, com cobertura de 73% nos módulos de regras de negócio, reservas, ocorrências e relatórios agregados.
+Total consolidado no repositório: **6 testes automatizados** (`CT07`, `CT08`, `CT09`, `CT10`, `CT15`, `CT16`), todos passando localmente com cerca de **74% de cobertura de linhas** no módulo testado.

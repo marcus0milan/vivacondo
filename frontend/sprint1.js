@@ -1,502 +1,562 @@
-// ============================================================================
-// VIVACONDO — CÓDIGO COMPLETO SPRINTS 1, 2, 3 E 4 (E5, E6, E7, E8)
-// ============================================================================
+const SESSION_KEY = 'vivacondo.sprint1.token';
+const app = document.querySelector('#app');
+const toast = document.querySelector('#toast');
+let data = { condominium: null, users: [], units: [], commonAreas: [] };
+let currentUser = null;
+let currentView = 'inicio';
+let toastTimer;
+let accessToken = sessionStorage.getItem(SESSION_KEY);
 
-const VivaCondoService = {
-  initSeed() {
-    if (!localStorage.getItem('vivacondo_areas')) {
-      const areas = [
-        { id: 1, nome: 'Salão de Festas', capacidade: 60, taxa: 150.00, ativa: true },
-        { id: 2, nome: 'Churrasqueira Gourmet', capacidade: 25, taxa: 80.00, ativa: true },
-        { id: 3, nome: 'Quadra Poliesportiva', capacidade: 20, taxa: 0.00, ativa: true }
-      ];
-      localStorage.setItem('vivacondo_areas', JSON.stringify(areas));
-    }
+async function apiRequest(path, options = {}) {
+  const headers = new Headers(options.headers);
+  if (options.body) headers.set('Content-Type', 'application/json');
+  if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
 
-    if (!localStorage.getItem('vivacondo_reservas')) {
-      const reservas = [
-        {
-          id: 101,
-          areaId: 1,
-          areaNome: 'Salão de Festas',
-          moradorNome: 'Guilherme Rastelli',
-          bloco: 'Bloco A',
-          unidade: '101',
-          data: '2026-11-20',
-          horaInicio: '18:00',
-          horaFim: '23:00',
-          status: 'aprovada',
-          justificativa: ''
-        },
-        {
-          id: 102,
-          areaId: 2,
-          areaNome: 'Churrasqueira Gourmet',
-          moradorNome: 'João Cardoso',
-          bloco: 'Bloco B',
-          unidade: '204',
-          data: '2026-11-22',
-          horaInicio: '12:00',
-          horaFim: '17:00',
-          status: 'pendente',
-          justificativa: ''
-        }
-      ];
-      localStorage.setItem('vivacondo_reservas', JSON.stringify(reservas));
-    }
-
-    if (!localStorage.getItem('vivacondo_ocorrencias')) {
-      const ocorrencias = [
-        {
-          id: 201,
-          titulo: 'Infiltração na garagem subterrânea',
-          categoria: 'Manutenção',
-          bloco: 'Bloco A',
-          unidade: '101',
-          moradorNome: 'Guilherme Rastelli',
-          dataCriacao: '2026-10-01',
-          prazoLimite: '2026-11-25',
-          status: 'aberta',
-          respostaSindico: ''
-        },
-        {
-          id: 202,
-          titulo: 'Barulho após as 22h',
-          categoria: 'Convivência',
-          bloco: 'Bloco B',
-          unidade: '204',
-          moradorNome: 'João Cardoso',
-          dataCriacao: '2026-10-10',
-          prazoLimite: '2026-11-18',
-          status: 'em_analise',
-          respostaSindico: 'Notificação enviada à unidade.'
-        },
-        {
-          id: 203,
-          titulo: 'Lâmpada queimada no corredor',
-          categoria: 'Elétrica',
-          bloco: 'Bloco A',
-          unidade: '102',
-          moradorNome: 'Felipe Pires',
-          dataCriacao: '2026-10-05',
-          prazoLimite: '2026-10-12',
-          status: 'resolvida',
-          respostaSindico: 'Substituída pela manutenção.'
-        }
-      ];
-      localStorage.setItem('vivacondo_ocorrencias', JSON.stringify(ocorrencias));
-    }
-  },
-
-  listarAreasAtivas() {
-    const areas = JSON.parse(localStorage.getItem('vivacondo_areas') || '[]');
-    return areas.filter(a => a.ativa);
-  },
-
-  adicionarArea({ nome, capacidade, taxa }) {
-    if (!nome || capacidade <= 0 || taxa < 0) {
-      throw new Error('Dados inválidos para cadastro de área comum.');
-    }
-    const areas = JSON.parse(localStorage.getItem('vivacondo_areas') || '[]');
-    const nova = { id: Date.now(), nome: nome.trim(), capacidade: Number(capacidade), taxa: Number(taxa), ativa: true };
-    areas.push(nova);
-    localStorage.setItem('vivacondo_areas', JSON.stringify(areas));
-    return nova;
-  },
-
-  listarReservas() {
-    return JSON.parse(localStorage.getItem('vivacondo_reservas') || '[]');
-  },
-
-  criarReserva({ areaId, moradorNome, bloco, unidade, data, horaInicio, horaFim }) {
-    if (!areaId || !moradorNome || !bloco || !unidade || !data || !horaInicio || !horaFim) {
-      throw new Error('Todos os campos da reserva são obrigatórios.');
-    }
-    if (horaFim <= horaInicio) {
-      throw new Error('A hora de término deve ser posterior à hora de início.');
-    }
-
-    const reservas = this.listarReservas();
-    const areas = this.listarAreasAtivas();
-    const area = areas.find(a => a.id === Number(areaId));
-    if (!area) throw new Error('Área comum inválida ou inativa.');
-
-    // REGRA DE NEGÓCIO NÃO TRIVIAL (Sprint 2): Bloqueio de conflito de horário na mesma área e data
-    const conflito = reservas.find(r =>
-      r.areaId === Number(areaId) &&
-      r.data === data &&
-      r.status !== 'recusada' &&
-      (horaInicio < r.horaFim && horaFim > r.horaInicio)
-    );
-
-    if (conflito) {
-      throw new Error(`Conflito de agenda: "${area.nome}" já possui reserva (${conflito.horaInicio} às ${conflito.horaFim}) no dia ${data}.`);
-    }
-
-    const novaReserva = {
-      id: Date.now(),
-      areaId: Number(areaId),
-      areaNome: area.nome,
-      moradorNome: moradorNome.replace(/<[^>]*>?/gm, ''),
-      bloco,
-      unidade,
-      data,
-      horaInicio,
-      horaFim,
-      status: 'pendente',
-      justificativa: ''
-    };
-
-    reservas.push(novaReserva);
-    localStorage.setItem('vivacondo_reservas', JSON.stringify(reservas));
-    return novaReserva;
-  },
-
-  avaliarReserva(reservaId, novoStatus, justificativa = '') {
-    if (!['aprovada', 'recusada'].includes(novoStatus)) {
-      throw new Error('Status inválido.');
-    }
-    if (novoStatus === 'recusada' && !justificativa.trim()) {
-      throw new Error('A recusa de uma reserva exige justificativa obrigatória.');
-    }
-
-    const reservas = this.listarReservas();
-    const idx = reservas.findIndex(r => r.id === Number(reservaId));
-    if (idx === -1) throw new Error('Reserva não encontrada.');
-
-    reservas[idx].status = novoStatus;
-    reservas[idx].justificativa = justificativa.trim();
-    localStorage.setItem('vivacondo_reservas', JSON.stringify(reservas));
-    return reservas[idx];
-  },
-
-  listarOcorrencias() {
-    return JSON.parse(localStorage.getItem('vivacondo_ocorrencias') || '[]');
-  },
-
-  criarOcorrencia({ titulo, categoria, bloco, unidade, moradorNome, prazoLimite }) {
-    if (!titulo || !categoria || !bloco || !unidade || !moradorNome) {
-      throw new Error('Preencha todos os campos obrigatórios da ocorrência.');
-    }
-    const ocorrencias = this.listarOcorrencias();
-    const nova = {
-      id: Date.now(),
-      titulo: titulo.replace(/<[^>]*>?/gm, ''),
-      categoria,
-      bloco,
-      unidade,
-      moradorNome,
-      dataCriacao: new Date().toISOString().split('T')[0],
-      prazoLimite: prazoLimite || '2026-11-30',
-      status: 'aberta',
-      respostaSindico: ''
-    };
-    ocorrencias.push(nova);
-    localStorage.setItem('vivacondo_ocorrencias', JSON.stringify(ocorrencias));
-    return nova;
-  },
-
-  atualizarStatusOcorrencia(id, status, respostaSindico) {
-    const ocorrencias = this.listarOcorrencias();
-    const idx = ocorrencias.findIndex(o => o.id === Number(id));
-    if (idx === -1) throw new Error('Ocorrência não encontrada.');
-    ocorrencias[idx].status = status;
-    ocorrencias[idx].respostaSindico = respostaSindico || '';
-    localStorage.setItem('vivacondo_ocorrencias', JSON.stringify(ocorrencias));
-    return ocorrencias[idx];
-  },
-
-  obterRelatorioAgregado() {
-    const ocorrencias = this.listarOcorrencias();
-    const reservas = this.listarReservas();
-    const porBloco = {};
-
-    ['Bloco A', 'Bloco B', 'Bloco C'].forEach(b => {
-      porBloco[b] = { bloco: b, totalOcorrencias: 0, abertas: 0, resolvidas: 0, reservasAtivas: 0 };
-    });
-
-    ocorrencias.forEach(o => {
-      if (!porBloco[o.bloco]) {
-        porBloco[o.bloco] = { bloco: o.bloco, totalOcorrencias: 0, abertas: 0, resolvidas: 0, reservasAtivas: 0 };
-      }
-      porBloco[o.bloco].totalOcorrencias += 1;
-      if (o.status !== 'resolvida') porBloco[o.bloco].abertas += 1;
-      else porBloco[o.bloco].resolvidas += 1;
-    });
-
-    reservas.forEach(r => {
-      if (!porBloco[r.bloco]) {
-        porBloco[r.bloco] = { bloco: r.bloco, totalOcorrencias: 0, abertas: 0, resolvidas: 0, reservasAtivas: 0 };
-      }
-      if (r.status === 'aprovada' || r.status === 'pendente') {
-        porBloco[r.bloco].reservasAtivas += 1;
-      }
-    });
-
-    const hoje = new Date('2026-11-01');
-    const alertas = ocorrencias.filter(o => {
-      if (o.status === 'resolvida') return false;
-      const prazo = new Date(o.prazoLimite);
-      const diffDias = Math.ceil((prazo - hoje) / (1000 * 60 * 60 * 24));
-      return diffDias <= 30;
-    });
-
-    return {
-      agrupadoPorBloco: Object.values(porBloco),
-      alertasCriticos: alertas,
-      totais: {
-        totalAreas: this.listarAreasAtivas().length,
-        reservasPendentes: reservas.filter(r => r.status === 'pendente').length,
-        ocorrenciasAbertas: ocorrencias.filter(o => o.status !== 'resolvida').length
-      }
-    };
-  },
-
-  gerarCSVRelatorio() {
-    const { agrupadoPorBloco } = this.obterRelatorioAgregado();
-    const cabecalho = 'Bloco,Total_Ocorrencias,Ocorrencias_Abertas,Ocorrencias_Resolvidas,Reservas_Ativas\n';
-    const linhas = agrupadoPorBloco.map(item =>
-      `${item.bloco},${item.totalOcorrencias},${item.abertas},${item.resolvidas},${item.reservasAtivas}`
-    ).join('\n');
-    return cabecalho + linhas;
+  const response = await fetch(`/api${path}`, { ...options, headers });
+  const payload = response.status === 204 ? null : await response.json().catch(() => null);
+  if (!response.ok) {
+    const message = response.status === 401
+      ? 'E-mail, senha ou perfil inválido. Confira os dados e tente novamente.'
+      : payload?.message || payload?.detail || 'Não foi possível concluir a operação. Tente novamente.';
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
-};
+  return payload;
+}
 
-// ============================================================================
-// CONTROLADOR DE INTERFACE (DOM) — NAVERADOR
-// ============================================================================
-if (typeof document !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    VivaCondoService.initSeed();
+async function loadAccountData() {
+  const [units, users, commonAreas] = currentUser.profile === 'SINDICO'
+    ? await Promise.all([
+      apiRequest('/units'),
+      apiRequest('/residents'),
+      apiRequest('/areas'),
+    ])
+    : [[], [], await apiRequest('/areas')];
+  data = {
+    condominium: {
+      id: currentUser.condominiumId,
+      name: currentUser.condominiumName,
+      address: currentUser.address,
+    },
+    units,
+    users: users.map((user) => ({ ...user, profile: 'MORADOR' })),
+    commonAreas,
+  };
+}
 
-    const perfilSelect = document.getElementById('perfilAtivo');
-    const feedbackMsg = document.getElementById('feedbackMsg');
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  })[character]);
+}
 
-    function exibirMensagem(texto, tipo = 'sucesso') {
-      feedbackMsg.textContent = texto;
-      feedbackMsg.className = `feedback ${tipo}`;
-      setTimeout(() => feedbackMsg.classList.add('hidden'), 4500);
-    }
+function normalize(value) {
+  return value.trim().toLocaleLowerCase('pt-BR');
+}
 
-    // Controle de Abas
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
-        renderizarTudo();
-      });
-    });
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add('is-visible');
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toast.classList.remove('is-visible'), 3200);
+}
 
-    perfilSelect.addEventListener('change', renderizarTudo);
+function showStartupError(error) {
+  app.innerHTML = `
+    <section class="auth-screen">
+      <div class="auth-card">
+        <span class="brand-mark" aria-hidden="true">v</span>
+        <h1>Não foi possível conectar ao sistema</h1>
+        <p class="page-subtitle">${escapeHTML(error.message)}</p>
+        <p class="page-subtitle">Verifique se a API e o PostgreSQL estão em execução.</p>
+      </div>
+    </section>`;
+}
 
-    function renderizarAreas() {
-      const areas = VivaCondoService.listarAreasAtivas();
-      const tbody = document.querySelector('#tabelaAreas tbody');
-      const selectArea = document.getElementById('resAreaId');
+function renderBootstrap() {
+  app.innerHTML = `
+    <section class="auth-screen">
+      <form class="auth-card" id="bootstrap-form">
+        <a class="brand auth-brand" href="#" aria-label="VivaCondo">
+          <span class="brand-mark" aria-hidden="true">v</span><span>vivacondo</span>
+        </a>
+        <p class="eyebrow">CONFIGURAÇÃO INICIAL · SPRINT 1</p>
+        <h1>Criar o acesso da síndica</h1>
+        <p class="page-subtitle">Cadastre o condomínio e a primeira conta administrativa para começar.</p>
+        <div class="prototype-notice">Esta configuração cria o primeiro acesso administrativo do condomínio.</div>
+        <label for="bootstrap-condominium">Nome do condomínio</label>
+        <input id="bootstrap-condominium" name="condominium" maxlength="150" required />
+        <label for="bootstrap-address">Endereço</label>
+        <input id="bootstrap-address" name="address" maxlength="255" required />
+        <label for="bootstrap-name">Nome da síndica</label>
+        <input id="bootstrap-name" name="name" maxlength="100" autocomplete="name" required />
+        <label for="bootstrap-email">E-mail</label>
+        <input id="bootstrap-email" name="email" type="email" maxlength="150" autocomplete="email" required />
+        <label for="bootstrap-password">Senha <span class="optional-label">mínimo de 8 caracteres</span></label>
+        <input id="bootstrap-password" name="password" type="password" minlength="8" autocomplete="new-password" required />
+        <p class="form-error" id="bootstrap-error" role="alert"></p>
+        <button class="button button-primary button-wide" type="submit">Criar acesso</button>
+      </form>
+    </section>`;
+}
 
-      tbody.innerHTML = areas.map(a => `
-        <tr>
-          <td><strong>${a.nome}</strong></td>
-          <td>${a.capacidade} pessoas</td>
-          <td>R$ ${a.taxa.toFixed(2)}</td>
-          <td><span class="status-pill aprovada">Ativa</span></td>
-        </tr>
-      `).join('');
+function renderLogin(errorMessage = '') {
+  app.innerHTML = `
+    <section class="auth-screen">
+      <form class="auth-card" id="login-form">
+        <a class="brand auth-brand" href="#" aria-label="VivaCondo">
+          <span class="brand-mark" aria-hidden="true">v</span><span>vivacondo</span>
+        </a>
+        <p class="eyebrow">ACESSO AO CONDOMÍNIO</p>
+        <h1>Bem-vindo ao VivaCondo</h1>
+        <p class="page-subtitle">${escapeHTML(data.condominium?.name ?? 'Acesse seu condomínio')}</p>
+        <label for="login-email">E-mail</label>
+        <input id="login-email" name="email" type="email" autocomplete="username" required />
+        <label for="login-password">Senha</label>
+        <input id="login-password" name="password" type="password" autocomplete="current-password" required />
+        <label for="login-profile">Perfil</label>
+        <select id="login-profile" name="profile" required>
+          <option value="SINDICO">Síndico(a)</option>
+          <option value="MORADOR">Morador(a)</option>
+        </select>
+        <p class="form-error" id="login-error" role="alert">${escapeHTML(errorMessage)}</p>
+        <button class="button button-primary button-wide" type="submit">Entrar</button>
+      </form>
+    </section>`;
+}
 
-      selectArea.innerHTML = areas.map(a =>
-        `<option value="${a.id}">${a.nome} (Cap: ${a.capacidade} | R$ ${a.taxa.toFixed(2)})</option>`
-      ).join('');
-    }
+function findUnit(unitId) {
+  return data.units.find((unit) => String(unit.id) === String(unitId));
+}
 
-    function renderizarReservas() {
-      const isSindico = perfilSelect.value === 'sindico';
-      const reservas = VivaCondoService.listarReservas();
-      const tbody = document.querySelector('#tabelaReservas tbody');
+function unitLabel(unit) {
+  return `Bloco ${unit.block} · Unidade ${unit.number}`;
+}
 
-      tbody.innerHTML = reservas.map(r => {
-        let acoes = '<span class="muted">Apenas visualização</span>';
-        if (isSindico && r.status === 'pendente') {
-          acoes = `
-            <button class="btn-sm btn-ok" onclick="window.acaoReserva(${r.id}, 'aprovada')">Aprovar</button>
-            <button class="btn-sm btn-danger" onclick="window.acaoReserva(${r.id}, 'recusada')">Recusar</button>
-          `;
-        } else if (r.justificativa) {
-          acoes = `<small>Motivo: ${r.justificativa}</small>`;
-        }
+function renderHeader() {
+  const manager = currentUser.profile === 'SINDICO';
+  const navigation = [
+    { id: 'inicio', label: 'Visão geral', icon: '⌂' },
+    ...(manager ? [{ id: 'cadastros', label: 'Unidades e moradores', icon: '▤' }] : []),
+    { id: 'areas', label: 'Áreas comuns', icon: '⌂' },
+    ...(!manager ? [
+      { id: 'reservas', label: 'Reservas', icon: '◷' },
+      { id: 'chamados', label: 'Chamados', icon: '!' },
+      { id: 'assistente', label: 'Assistente', icon: '✦' },
+    ] : []),
+  ];
 
-        return `
-          <tr>
-            <td><strong>${r.areaNome}</strong></td>
-            <td>${r.bloco} - ${r.unidade}<br><small>${r.moradorNome}</small></td>
-            <td>${r.data}<br><small>${r.horaInicio} às ${r.horaFim}</small></td>
-            <td><span class="status-pill ${r.status}">${r.status.toUpperCase()}</span></td>
-            <td>${acoes}</td>
-          </tr>
-        `;
-      }).join('');
-    }
+  return `
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navegação principal">
+        <a class="brand" href="#inicio" data-view="inicio"><span class="brand-mark" aria-hidden="true">v</span><span>vivacondo</span></a>
+        <div class="property-switcher">
+          <span class="property-symbol" aria-hidden="true">H</span>
+          <span class="property-copy"><strong>${escapeHTML(data.condominium.name)}</strong><small>Área do condomínio</small></span>
+        </div>
+        <p class="nav-caption">VIVACONDO</p>
+        <nav class="main-nav">
+          ${navigation.map((item) => `
+            <a class="nav-link ${currentView === item.id ? 'is-active' : ''}" href="#${item.id}" data-view="${item.id}">
+              <span class="nav-icon" aria-hidden="true">${item.icon}</span><span>${item.label}</span>
+            </a>`).join('')}
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="profile-button">
+            <span class="avatar">${escapeHTML(currentUser.name.slice(0, 1).toLocaleUpperCase('pt-BR'))}</span>
+            <span class="profile-copy"><strong>${escapeHTML(currentUser.name)}</strong><small>${manager ? 'Síndico(a)' : 'Morador(a)'}</small></span>
+          </div>
+          <button class="button button-quiet button-wide" type="button" data-action="logout">Sair</button>
+        </div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar">
+          <div class="breadcrumb"><span>${escapeHTML(data.condominium.name)}</span><span aria-hidden="true">/</span><strong>${navigation.find((item) => item.id === currentView)?.label ?? 'Visão geral'}</strong></div>
+          <span class="role-chip">${manager ? 'Síndico(a)' : 'Morador(a)'}</span>
+        </header>
+        <section class="page-content" id="page-content">${renderView()}</section>
+      </main>
+    </div>`;
+}
 
-    function renderizarOcorrencias() {
-      const isSindico = perfilSelect.value === 'sindico';
-      const ocorrencias = VivaCondoService.listarOcorrencias();
-      const tbody = document.querySelector('#tabelaOcorrencias tbody');
+function renderDashboard() {
+  const manager = currentUser.profile === 'SINDICO';
+  const ownUnit = manager ? null : findUnit(currentUser.unitId);
+  return `
+    <div class="page-heading">
+      <div><p class="eyebrow">GESTÃO DO CONDOMÍNIO</p><h1>Olá, ${escapeHTML(currentUser.name.split(' ')[0])}</h1>
+      <p class="page-subtitle">${manager ? 'Gerencie os cadastros básicos do condomínio.' : `Acompanhe as áreas comuns e solicitações do ${escapeHTML(data.condominium.name)}.`}</p></div>
+      ${manager ? '<a class="button button-primary" href="#cadastros" data-view="cadastros">Cadastrar unidade ou morador</a>' : ''}
+    </div>
+    ${manager ? `
+      <div class="metrics-grid sprint-metrics">
+        <article class="metric-card"><div class="metric-top"><span>Unidades cadastradas</span><span class="metric-icon" aria-hidden="true">⌂</span></div><div class="metric-value">${data.units.length}</div></article>
+        <article class="metric-card"><div class="metric-top"><span>Moradores cadastrados</span><span class="metric-icon" aria-hidden="true">♙</span></div><div class="metric-value">${data.users.length}</div></article>
+        <article class="metric-card"><div class="metric-top"><span>Áreas comuns</span><span class="metric-icon" aria-hidden="true">▦</span></div><div class="metric-value">${data.commonAreas.length}</div></article>
+      </div>
+      <section class="panel sprint-intro"><div class="panel-heading"><h2>Funcionalidades entregues</h2><p>Cadastros de condomínio e funcionalidades das Sprints 1 e 2.</p></div><div class="sprint-link-grid">
+        <a class="sprint-link" href="#cadastros" data-view="cadastros"><strong>Unidades e moradores</strong><span>Cadastro com validação de vínculo e CPF.</span></a>
+        <a class="sprint-link" href="#areas" data-view="areas"><strong>Áreas comuns</strong><span>Cadastro com capacidade e horário limite.</span></a>
+      </div></section>
+    ` : `
+      <div class="resident-summary">
+        <span class="metric-icon" aria-hidden="true">⌂</span>
+        <div><strong>Unidade vinculada</strong><p>${ownUnit ? escapeHTML(unitLabel(ownUnit)) : currentUser.unitId ? 'Sua conta está vinculada a uma unidade cadastrada.' : 'Entre em contato com a administração para verificar seu vínculo.'}</p></div>
+      </div>
+      <section class="panel sprint-intro"><div class="panel-heading"><h2>Áreas comuns disponíveis</h2><p>Consulte os espaços e solicite uma reserva.</p></div>${renderCommonAreaList(false)}
+        <div class="sprint-link-grid resident-actions">
+          <a class="sprint-link" href="#reservas" data-view="reservas"><strong>Reservar uma área</strong><span>Consulte horários e solicite uma reserva.</span></a>
+          <a class="sprint-link" href="#chamados" data-view="chamados"><strong>Abrir chamado</strong><span>Reporte um problema à administração.</span></a>
+          <a class="sprint-link" href="#assistente" data-view="assistente"><strong>Consultar o regimento</strong><span>Tire dúvidas com o assistente virtual.</span></a>
+        </div>
+      </section>
+    `}
+    `;
+}
 
-      tbody.innerHTML = ocorrencias.map(o => {
-        let acoes = '<span class="muted">—</span>';
-        if (isSindico && o.status !== 'resolvida') {
-          acoes = `
-            <button class="btn-sm btn-ok" onclick="window.resolverOcorrencia(${o.id})">Marcar Resolvida</button>
-          `;
-        }
-        return `
-          <tr>
-            <td><strong>${o.titulo}</strong><br><small>Categoria: ${o.categoria}</small></td>
-            <td>${o.bloco} / ${o.unidade}<br><small>${o.moradorNome}</small></td>
-            <td>${o.prazoLimite}</td>
-            <td>
-              <span class="status-pill ${o.status}">${o.status.toUpperCase()}</span>
-              ${o.respostaSindico ? `<br><small>Resp: ${o.respostaSindico}</small>` : ''}
-            </td>
-            <td>${acoes}</td>
-          </tr>
-        `;
-      }).join('');
-    }
+function renderUnitRows() {
+  if (!data.units.length) return '<div class="empty-state">Nenhuma unidade cadastrada.</div>';
+  return `<div class="data-list">${data.units.map((unit) => {
+    const residentCount = unit.residentCount;
+    return `<article class="data-row"><div><strong>${escapeHTML(unitLabel(unit))}</strong><small>${residentCount} morador(es) vinculado(s)</small></div></article>`;
+  }).join('')}</div>`;
+}
 
-    function renderizarPainel() {
-      const rel = VivaCondoService.obterRelatorioAgregado();
-      const listaAlertas = document.getElementById('listaAlertas');
-      const kpiContainer = document.getElementById('kpiContainer');
-      const tbody = document.querySelector('#tabelaAgregada tbody');
+function renderResidentRows() {
+  const residents = data.users;
+  if (!residents.length) return '<div class="empty-state">Nenhum morador cadastrado.</div>';
+  return `<div class="data-list">${residents.map((resident) => {
+    const unit = findUnit(resident.unitId);
+    const maskedCpf = `•••.•••.•••-${resident.cpf.slice(-2)}`;
+    return `<article class="data-row"><div><strong>${escapeHTML(resident.name)}</strong><small>${escapeHTML(resident.email)} · CPF ${maskedCpf}</small></div><span class="data-tag">${unit ? escapeHTML(unitLabel(unit)) : 'Unidade não localizada'}</span></article>`;
+  }).join('')}</div>`;
+}
 
-      listaAlertas.innerHTML = rel.alertasCriticos.length
-        ? rel.alertasCriticos.map(a => `<li><strong>[${a.bloco} - Unid. ${a.unidade}]</strong> ${a.titulo} — Prazo limite: <strong>${a.prazoLimite}</strong> (Status: ${a.status})</li>`).join('')
-        : '<li>Nenhum alerta crítico pendente para os próximos 30 dias.</li>';
+function renderManagement() {
+  const residentForm = data.units.length ? `
+    <form class="form-card" id="resident-form">
+      <h3>Cadastrar morador</h3>
+      <label for="resident-name">Nome completo</label><input id="resident-name" name="name" maxlength="100" autocomplete="name" required />
+      <label for="resident-email">E-mail de acesso</label><input id="resident-email" name="email" type="email" maxlength="150" autocomplete="email" required />
+      <label for="resident-cpf">CPF</label><input id="resident-cpf" name="cpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required />
+      <label for="resident-unit">Unidade</label><select id="resident-unit" name="unitId" required><option value="">Selecione uma unidade</option>${data.units.map((unit) => `<option value="${escapeHTML(unit.id)}">${escapeHTML(unitLabel(unit))}</option>`).join('')}</select>
+      <label for="resident-password">Senha inicial <span class="optional-label">mínimo de 8 caracteres</span></label><input id="resident-password" name="password" type="password" minlength="8" autocomplete="new-password" required />
+      <p class="form-error" id="resident-error" role="alert"></p>
+      <button class="button button-primary" type="submit">Cadastrar morador</button>
+    </form>` : `
+      <div class="form-card form-hint"><h3>Cadastre uma unidade primeiro</h3><p>O morador precisa estar associado a uma unidade existente.</p></div>`;
 
-      kpiContainer.innerHTML = `
-        <div class="kpi-card"><span>Áreas Ativas</span><strong>${rel.totais.totalAreas}</strong></div>
-        <div class="kpi-card"><span>Reservas Pendentes</span><strong>${rel.totais.reservasPendentes}</strong></div>
-        <div class="kpi-card"><span>Ocorrências em Aberto</span><strong>${rel.totais.ocorrenciasAbertas}</strong></div>
-      `;
+  return `
+    <div class="page-heading"><div><p class="eyebrow">GESTÃO DO CONDOMÍNIO</p><h1>Unidades e moradores</h1><p class="page-subtitle">Cadastre unidades e vincule cada morador a uma unidade existente.</p></div></div>
+    <div class="management-grid">
+      <section class="panel"><div class="panel-header"><div class="panel-heading"><h2>Nova unidade</h2><p>Bloco e número devem ser únicos no condomínio.</p></div></div>
+        <form class="form-card" id="unit-form">
+          <label for="unit-block">Bloco</label><input id="unit-block" name="block" maxlength="20" required />
+          <label for="unit-number">Número da unidade</label><input id="unit-number" name="number" maxlength="20" required />
+          <p class="form-error" id="unit-error" role="alert"></p>
+          <button class="button button-primary" type="submit">Cadastrar unidade</button>
+        </form>
+      </section>
+      <section class="panel"><div class="panel-header"><div class="panel-heading"><h2>Morador</h2><p>CPF válido e vínculo obrigatório com unidade.</p></div></div>${residentForm}</section>
+    </div>
+    <section class="panel list-panel"><div class="panel-header"><div class="panel-heading"><h2>Unidades cadastradas</h2><p>${data.units.length} unidade(s)</p></div></div>${renderUnitRows()}</section>
+    <section class="panel list-panel"><div class="panel-header"><div class="panel-heading"><h2>Moradores cadastrados</h2><p>${data.users.filter((user) => user.profile === 'MORADOR').length} morador(es)</p></div></div>${renderResidentRows()}</section>`;
+}
 
-      tbody.innerHTML = rel.agrupadoPorBloco.map(b => `
-        <tr>
-          <td><strong>${b.bloco}</strong></td>
-          <td>${b.totalOcorrencias}</td>
-          <td>${b.abertas}</td>
-          <td>${b.resolvidas}</td>
-          <td><strong>${b.reservasAtivas}</strong></td>
-        </tr>
-      `).join('');
-    }
+function renderCommonAreaList(canManage) {
+  if (!data.commonAreas.length) return '<div class="empty-state">Nenhuma área comum cadastrada.</div>';
+  return `<div class="data-list">${data.commonAreas.map((area) => `
+    <article class="data-row"><div><strong>${escapeHTML(area.name)}</strong><small>Capacidade máxima: ${area.capacity} pessoas · Horário limite: ${escapeHTML(area.usageLimit)}</small></div>${canManage ? '<span class="data-tag">Cadastrada</span>' : ''}</article>`).join('')}</div>`;
+}
 
-    function renderizarTudo() {
-      const isSindico = perfilSelect.value === 'sindico';
-      document.querySelectorAll('.sindico-only').forEach(el => {
-        el.style.display = isSindico ? 'block' : 'none';
-      });
-      renderizarAreas();
-      renderizarReservas();
-      renderizarOcorrencias();
-      renderizarPainel();
-    }
+function renderAreas() {
+  const manager = currentUser.profile === 'SINDICO';
+  return `
+    <div class="page-heading"><div><p class="eyebrow">ESTRUTURA DO CONDOMÍNIO</p><h1>Áreas comuns</h1><p class="page-subtitle">${manager ? 'Cadastre espaços disponíveis no condomínio.' : 'Consulte os espaços cadastrados pela administração.'}</p></div></div>
+    ${manager ? `
+      <section class="panel"><div class="panel-header"><div class="panel-heading"><h2>Nova área comum</h2><p>O nome não pode se repetir neste condomínio.</p></div></div>
+        <form class="form-card form-grid" id="area-form">
+          <div><label for="area-name">Nome da área</label><input id="area-name" name="name" maxlength="100" placeholder="Ex.: Salão de festas" required /></div>
+          <div><label for="area-capacity">Capacidade máxima</label><input id="area-capacity" name="capacity" type="number" min="1" step="1" required /></div>
+          <div><label for="area-limit">Horário limite de uso</label><input id="area-limit" name="usageLimit" type="time" required /></div>
+          <p class="form-error form-grid-wide" id="area-error" role="alert"></p>
+          <button class="button button-primary form-grid-wide" type="submit">Cadastrar área comum</button>
+        </form>
+      </section>` : ''}
+    <section class="panel list-panel"><div class="panel-header"><div class="panel-heading"><h2>Áreas cadastradas</h2><p>${data.commonAreas.length} área(s) comum(ns)</p></div></div>${renderCommonAreaList(manager)}</section>`;
+}
 
-    // Eventos de Formulários
-    document.getElementById('formNovaArea').addEventListener('submit', (e) => {
-      e.preventDefault();
-      try {
-        VivaCondoService.adicionarArea({
-          nome: document.getElementById('areaNome').value,
-          capacidade: document.getElementById('areaCapacidade').value,
-          taxa: document.getElementById('areaTaxa').value
-        });
-        e.target.reset();
-        exibirMensagem('Nova área comum cadastrada com sucesso!');
-        renderizarTudo();
-      } catch (err) {
-        exibirMensagem(err.message, 'erro');
-      }
-    });
+function renderReservations() {
+  const areas = data.commonAreas;
+  const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
+  return `
+    <div class="page-heading"><div><p class="eyebrow">ÁREAS COMUNS</p><h1>Solicitar reserva</h1><p class="page-subtitle">Escolha a área, a data e o horário desejados.</p></div></div>
+    <section class="panel"><div class="panel-header"><div class="panel-heading"><h2>Nova reserva</h2><p>Máximo de 2 reservas ativas por unidade no mês. Os horários precisam estar livres e respeitar o limite da área.</p></div></div>
+      ${areas.length ? `<form class="form-card form-grid" id="reservation-form">
+        <div class="form-grid-wide"><label for="reservation-area">Área comum</label><select id="reservation-area" name="commonAreaId" required><option value="">Selecione uma área</option>${areas.map((area) => `<option value="${escapeHTML(area.id)}">${escapeHTML(area.name)} · limite ${escapeHTML(area.usageLimit)}</option>`).join('')}</select></div>
+        <div><label for="reservation-date">Data</label><input id="reservation-date" name="date" type="date" min="${today}" required /></div>
+        <div class="form-row"><div><label for="reservation-start">Início</label><input id="reservation-start" name="startTime" type="time" required /></div><div><label for="reservation-end">Fim</label><input id="reservation-end" name="endTime" type="time" required /></div></div>
+        <p class="form-error form-grid-wide" id="reservation-error" role="alert"></p>
+        <button class="button button-primary form-grid-wide" type="submit">Solicitar reserva</button>
+      </form>` : '<div class="empty-state">Ainda não há áreas comuns cadastradas.</div>'}
+    </section>`;
+}
 
-    document.getElementById('formNovaReserva').addEventListener('submit', (e) => {
-      e.preventDefault();
-      try {
-        VivaCondoService.criarReserva({
-          areaId: document.getElementById('resAreaId').value,
-          bloco: document.getElementById('resBloco').value,
-          unidade: document.getElementById('resUnidade').value,
-          moradorNome: document.getElementById('resMorador').value,
-          data: document.getElementById('resData').value,
-          horaInicio: document.getElementById('resHoraInicio').value,
-          horaFim: document.getElementById('resHoraFim').value
-        });
-        exibirMensagem('Reserva solicitada com sucesso! Status: Pendente.');
-        renderizarTudo();
-      } catch (err) {
-        exibirMensagem(err.message, 'erro');
-      }
-    });
+function renderCalls() {
+  return `
+    <div class="page-heading"><div><p class="eyebrow">MANUTENÇÃO</p><h1>Abrir chamado</h1><p class="page-subtitle">Descreva o problema para que a administração possa providenciar o atendimento.</p></div></div>
+    <section class="panel"><div class="panel-header"><div class="panel-heading"><h2>Novo chamado</h2><p>O chamado será registrado com status “Aberto”.</p></div></div>
+      <form class="form-card" id="call-form">
+        <label for="call-category">Categoria</label><input id="call-category" name="category" maxlength="100" placeholder="Ex.: Hidráulica" required />
+        <label for="call-location">Localização</label><input id="call-location" name="location" maxlength="150" placeholder="Ex.: Área da cozinha" required />
+        <label for="call-description">Descrição do problema</label><textarea id="call-description" name="description" maxlength="4000" rows="5" required></textarea>
+        <p class="form-error" id="call-error" role="alert"></p>
+        <button class="button button-primary" type="submit">Enviar chamado</button>
+      </form>
+    </section>`;
+}
 
-    document.getElementById('formNovaOcorrencia').addEventListener('submit', (e) => {
-      e.preventDefault();
-      try {
-        VivaCondoService.criarOcorrencia({
-          titulo: document.getElementById('ocTitulo').value,
-          categoria: document.getElementById('ocCategoria').value,
-          prazoLimite: document.getElementById('ocPrazo').value,
-          bloco: document.getElementById('ocBloco').value,
-          unidade: document.getElementById('ocUnidade').value,
-          moradorNome: document.getElementById('ocMorador').value
-        });
-        document.getElementById('ocTitulo').value = '';
-        exibirMensagem('Ocorrência registrada com sucesso!');
-        renderizarTudo();
-      } catch (err) {
-        exibirMensagem(err.message, 'erro');
-      }
-    });
+function renderAssistant() {
+  return `
+    <div class="page-heading"><div><p class="eyebrow">REGIMENTO INTERNO</p><h1>Assistente virtual</h1><p class="page-subtitle">Faça uma pergunta; as respostas usam somente o regimento cadastrado.</p></div></div>
+    <section class="panel"><div class="panel-header"><div class="panel-heading"><h2>Tire sua dúvida</h2><p>Se a informação não estiver no documento, o assistente avisará.</p></div></div>
+      <form class="form-card" id="assistant-form">
+        <label for="assistant-question">Sua pergunta</label><textarea id="assistant-question" name="question" maxlength="1000" rows="3" placeholder="Ex.: Qual é o horário permitido para usar a área comum?" required></textarea>
+        <p class="form-error" id="assistant-error" role="alert"></p>
+        <button class="button button-primary" type="submit">Consultar regimento</button>
+        <div id="assistant-answer" class="assistant-answer" role="status" aria-live="polite" hidden></div>
+      </form>
+    </section>`;
+}
 
-    document.getElementById('btnExportarCSV').addEventListener('click', () => {
-      const csv = VivaCondoService.gerarCSVRelatorio();
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'relatorio-vivacondo-por-bloco.csv';
-      a.click();
-      exibirMensagem('Relatório CSV exportado com sucesso!');
-    });
+function renderView() {
+  if (currentView === 'cadastros' && currentUser.profile === 'SINDICO') return renderManagement();
+  if (currentView === 'areas') return renderAreas();
+  if (currentView === 'reservas' && currentUser.profile === 'MORADOR') return renderReservations();
+  if (currentView === 'chamados' && currentUser.profile === 'MORADOR') return renderCalls();
+  if (currentView === 'assistente' && currentUser.profile === 'MORADOR') return renderAssistant();
+  return renderDashboard();
+}
 
-    // Ações globais de tabela (Síndico)
-    window.acaoReserva = (id, status) => {
-      try {
-        let just = '';
-        if (status === 'recusada') {
-          just = prompt('Informe a justificativa para recusar a reserva:') || '';
-        }
-        VivaCondoService.avaliarReserva(id, status, just);
-        exibirMensagem(`Reserva ${status} com sucesso!`);
-        renderizarTudo();
-      } catch (err) {
-        exibirMensagem(err.message, 'erro');
-      }
-    };
+function renderApp() {
+  if (!currentUser) {
+    renderLogin();
+    return;
+  }
+  app.innerHTML = renderHeader();
+}
 
-    window.resolverOcorrencia = (id) => {
-      const resp = prompt('Informe a providência/resposta do síndico:', 'Manutenção realizada.');
-      if (resp !== null) {
-        VivaCondoService.atualizarStatusOcorrencia(id, 'resolvida', resp);
-        exibirMensagem('Ocorrência marcada como resolvida!');
-        renderizarTudo();
-      }
-    };
+async function navigate(view) {
+  if (view === 'cadastros' && currentUser.profile !== 'SINDICO') {
+    showToast('Apenas o perfil de síndico pode gerenciar unidades e moradores.');
+    view = 'inicio';
+  }
+  await loadAccountData();
+  currentView = view;
+  window.history.replaceState(null, '', `#${view}`);
+  renderApp();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-    renderizarTudo();
+function displayFormError(id, message) {
+  const target = document.querySelector(`#${id}`);
+  if (target) target.textContent = message;
+}
+
+function readForm(form) {
+  return Object.fromEntries(new FormData(form).entries());
+}
+
+async function handleBootstrap(form) {
+  const values = readForm(form);
+  await apiRequest('/setup', {
+    method: 'POST',
+    body: JSON.stringify({
+      condominiumName: values.condominium.trim(),
+      address: values.address.trim(),
+      name: values.name.trim(),
+      email: normalize(values.email),
+      password: values.password,
+    }),
   });
+  data.condominium = { name: values.condominium.trim() };
+  showToast('Condomínio configurado. Entre com o e-mail e a senha cadastrados.');
+  renderLogin();
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = VivaCondoService;
+async function handleLogin(form) {
+  const values = readForm(form);
+  const result = await apiRequest('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({
+      email: normalize(values.email),
+      password: values.password,
+      profile: values.profile,
+    }),
+  });
+  accessToken = result.token;
+  sessionStorage.setItem(SESSION_KEY, accessToken);
+  currentUser = result.user;
+  await navigate('inicio');
 }
+
+async function handleUnit(form) {
+  const values = readForm(form);
+  await apiRequest('/units', {
+    method: 'POST',
+    body: JSON.stringify({ block: values.block.trim(), number: values.number.trim() }),
+  });
+  showToast('Unidade cadastrada.');
+  await navigate('cadastros');
+}
+
+async function handleResident(form) {
+  const values = readForm(form);
+  if (!findUnit(values.unitId)) {
+    displayFormError('resident-error', 'Selecione uma unidade cadastrada.');
+    return;
+  }
+  await apiRequest('/residents', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: values.name.trim(),
+      email: normalize(values.email),
+      cpf: values.cpf,
+      unitId: Number(values.unitId),
+      password: values.password,
+    }),
+  });
+  showToast('Morador cadastrado e vinculado à unidade.');
+  await navigate('cadastros');
+}
+
+async function handleArea(form) {
+  const values = readForm(form);
+  await apiRequest('/areas', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: values.name.trim(),
+      capacity: Number(values.capacity),
+      usageLimit: values.usageLimit,
+    }),
+  });
+  showToast('Área comum cadastrada.');
+  await navigate('areas');
+}
+
+async function handleReservation(form) {
+  const values = readForm(form);
+  const reservation = await apiRequest('/reservations', {
+    method: 'POST',
+    body: JSON.stringify({
+      commonAreaId: Number(values.commonAreaId),
+      date: values.date,
+      startTime: values.startTime,
+      endTime: values.endTime,
+    }),
+  });
+  showToast(`Reserva solicitada. Status: ${reservation.status === 'PENDENTE' ? 'Pendente' : reservation.status}.`);
+  await navigate('reservas');
+}
+
+async function handleCall(form) {
+  const values = readForm(form);
+  const call = await apiRequest('/calls', {
+    method: 'POST',
+    body: JSON.stringify({
+      category: values.category.trim(),
+      location: values.location.trim(),
+      description: values.description.trim(),
+    }),
+  });
+  showToast(`Chamado #${call.id} aberto.`);
+  await navigate('chamados');
+}
+
+async function handleAssistant(form) {
+  const values = readForm(form);
+  displayFormError('assistant-error', '');
+  const answer = await apiRequest('/assistant/questions', {
+    method: 'POST',
+    body: JSON.stringify({ question: values.question.trim() }),
+  });
+  const target = document.querySelector('#assistant-answer');
+  target.textContent = answer.answer;
+  target.hidden = false;
+}
+
+document.addEventListener('click', (event) => {
+  const viewLink = event.target.closest('[data-view]');
+  if (viewLink && currentUser) {
+    event.preventDefault();
+    navigate(viewLink.dataset.view).catch((error) => showToast(error.message));
+    return;
+  }
+
+  if (event.target.closest('[data-action="logout"]')) {
+    sessionStorage.removeItem(SESSION_KEY);
+    accessToken = null;
+    currentUser = null;
+    currentView = 'inicio';
+    renderLogin();
+  }
+});
+
+document.addEventListener('submit', async (event) => {
+  const form = event.target;
+  if (!form.matches('form')) return;
+  event.preventDefault();
+
+  try {
+    if (form.id === 'bootstrap-form') await handleBootstrap(form);
+    else if (form.id === 'login-form') await handleLogin(form);
+    else if (form.id === 'unit-form') await handleUnit(form);
+    else if (form.id === 'resident-form') await handleResident(form);
+    else if (form.id === 'area-form') await handleArea(form);
+    else if (form.id === 'reservation-form') await handleReservation(form);
+    else if (form.id === 'call-form') await handleCall(form);
+    else if (form.id === 'assistant-form') await handleAssistant(form);
+  } catch (error) {
+    const errorId = {
+      'bootstrap-form': 'bootstrap-error',
+      'login-form': 'login-error',
+      'unit-form': 'unit-error',
+      'resident-form': 'resident-error',
+      'area-form': 'area-error',
+      'reservation-form': 'reservation-error',
+      'call-form': 'call-error',
+      'assistant-form': 'assistant-error',
+    }[form.id];
+    if (errorId) displayFormError(errorId, error.message || 'Não foi possível concluir a operação.');
+    if (form.id === 'login-form' && errorId) displayFormError(errorId, error.message);
+  }
+});
+
+async function initialize() {
+  const setup = await apiRequest('/setup');
+  data.condominium = setup.condominiumName ? { name: setup.condominiumName } : null;
+  if (!setup.initialized) {
+    renderBootstrap();
+    return;
+  }
+
+  if (accessToken) {
+    try {
+      currentUser = await apiRequest('/me');
+      await navigate('inicio');
+      return;
+    } catch (error) {
+      if (error.status !== 401) throw error;
+      sessionStorage.removeItem(SESSION_KEY);
+      accessToken = null;
+    }
+  }
+  renderLogin();
+}
+
+initialize().catch(showStartupError);

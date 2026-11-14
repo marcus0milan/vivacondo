@@ -1,23 +1,19 @@
-# Ata de Retrospectiva — Sprint 3 — VivaCondo
+# Ata de Retrospectiva — Sprint 4 — VivaCondo
 
-**Data:** 16/10/2026    
-**Presentes:** Guilherme Rastelli Fernandes (RA 2840482421047) – Felipe Savegnago Pires (RA 2840482421034) – Marcus Vinicius Milan (RA 2840482421001)
+**Data:** 14/11/2026
+**Presentes:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
 
 ## 1. Ações da retrospectiva anterior — foram aplicadas?
 | Ação decidida | Aplicada? | Evidência/comentário |
 |---|---|---|
-| Padronizar retorno de erros da API em JSON com `{ erro, codigo, detalhes }` | Sim | Implementado middleware global de tratamento de erros no backend (PR #16) |
-| Preparar massa de dados (seed) maior para testar o dashboard e alertas da Sprint 3 | Sim | Script de seed atualizado com múltiplos blocos, unidades, reservas e ocorrências (PR #15) |
+| Escrever testes unitários verificáveis e organizar os artefatos de fechamento | Sim | 6 testes unitários passando e documentação revisada na branch `feature/docs-sprint-2` |
 
 ## 2. O que funcionou bem
-- O seed de dados realista permitiu validar imediatamente os gráficos e tabelas da consulta agregada do painel do síndico.
-- O fluxo entre abertura de ocorrência pelo morador e atualização no painel do síndico funcionou de ponta a ponta sem regressões.
+- Revisão crítica interna antes da entrega final evitou inconsistências entre a documentação e o código real do repositório.
+- O frontend original que conversa com a API e o PostgreSQL foi preservado.
 
 ## 3. O que não funcionou
-- A estilização responsiva das tabelas do painel em ecrãs menores precisou de ajustes de última hora.
+- O acúmulo de entregas para o dia 14/11 impediu a implementação completa das histórias #7 a #11 no backend (`Program.cs`).
 
-## 4. Ações para a próxima sprint
-| Ação | Responsável |
-|---|---|
-| Realizar o deploy público antecipado no início da Sprint 4 para testar em produção | Guilherme Rastelli Fernandes |
-| Executar bateria de testes de segurança (OWASP básico) e regressão ponta a ponta | Felipe Savegnago Pires e Marcus Vinicius Milan |
+## 4. Lições aprendidas no semestre
+- Manter entregas incrementais a cada sprint no Git e nunca substituir chamadas reais de API por armazenamento local (`localStorage`) apenas para simular telas não concluídas no backend.

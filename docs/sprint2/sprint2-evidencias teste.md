@@ -1,11 +1,12 @@
 # Evidências de Teste — Sprint 2 — VivaCondo
 
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
+
 | ID | Caso de teste | Tipo | Resultado | Evidência |
 |---|---|---|---|---|
-| CT06 | Listar apenas áreas comuns ativas para o perfil Morador | Integração | Passou | `tests/reservas.test.js` — Execução local e CI |
-| CT07 | Morador tenta reservar área comum já ocupada na mesma data/horário | Unitário + Integração | Passou | Bloqueado com HTTP 409 Conflict ("Horário indisponível para esta área") — `tests/reservas.test.js` |
-| CT08 | Reserva com data de início no passado ou hora fim menor que hora início | Unitário | Passou | Rejeitado pela validação de negócio e constraint `CHECK` do banco |
-| CT09 | Síndico aprova/recusa reserva pendente com registo de motivo | Integração | Passou | `tests/reservas.test.js` — Status atualizado corretamente |
+| CT07 | Bloquear reserva duplicada/sobreposta na mesma área e data | Unitário | Passou | `tests/vivacondo.test.js` (execução local) |
+| CT08 | Rejeitar reserva com hora fim menor ou igual à hora início | Unitário | Passou | `tests/vivacondo.test.js` (execução local) |
+| CT09 | Exigir justificativa ao recusar uma reserva (teste de unidade da regra) | Unitário | Passou | `tests/vivacondo.test.js` (execução local) |
 
 ## Cobertura automatizada nesta sprint
-Suite automatizada executada com 14 testes totais (6 da Sprint 1 + 8 novos da Sprint 2), 100% passando, cobrindo 68% das linhas nos módulos de autenticação, cadastros base e reservas de áreas comuns.
+Execução local dos testes unitários: 6 testes executados no arquivo de testes, todos passando (cerca de 74% de cobertura de linhas na lógica testada). Não há pipeline de CI configurado no repositório.

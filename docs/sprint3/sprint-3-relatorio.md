@@ -1,28 +1,29 @@
-# Relatório de Entrega — Sprint 3 — VivaCondo
+# Relatório de Entrega — Sprint 4 — VivaCondo
 
-**Período:** 03/10/2026 a 16/10/2026
-**Sprint Review:** 
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
+**Período:** Sprint 4
 
 ## 1. Planejado vs. entregue
 | História (E2) | Planejada para esta sprint? | Entregue? | Observação |
 |---|---|---|---|
-| #8 Painel do síndico com consulta agregada (ocorrências e reservas por bloco/categoria) | Sim | Sim | Implementado com `GROUP BY` e `JOIN` de 4 tabelas |
-| #9 Registo de ocorrências/chamados pelo morador e alertas de pendências/manutenção | Sim | Sim | Destaque visual automático para ocorrências críticas ou reservas próximas |
-| #10 Acompanhamento do histórico e status de reservas e ocorrências pelo morador | Sim | Sim | Exibe status (Pendente, Em Análise, Resolvida / Aprovada, Recusada) e resposta do síndico |
+| #11 Exportação do relatório do painel em CSV | Sim (Could) | Não (apenas lógica unitária isolada) | Não integrada ao `Program.cs` |
+| Consolidação dos testes unitários e documentação das Sprints | Sim | Sim | Entregue nos commits de fechamento na branch `feature/docs-sprint-2` |
 
 ## 2. Incremento funcional demonstrável
-Painel analítico (Dashboard) do síndico com indicadores em tempo real gerados por consulta agregada no banco de dados (total de ocorrências abertas/resolvidas agrupadas por categoria e bloco, e taxa de ocupação de áreas comuns), além do módulo completo de abertura e acompanhamento de ocorrências pelos moradores e painel de alertas.
-Vídeo de demonstração: `docs/sprint3/media/vivacondo-sprint3.mp4`.
+Sistema funcional cobrindo as histórias #1 a #6 integradas entre Frontend, API C# (`Program.cs`) e banco de dados PostgreSQL. As histórias #7 a #11 não foram implementadas no backend e estão declaradas como desvio de escopo na documentação final.
 
 ## 3. Backlog atualizado
-Board atualizado no GitHub Projects — histórias #8, #9 e #10 movidas para "Concluído". Na retrospectiva desta Sprint 3 (Semana 10), a equipa revisou o escopo da Sprint 4 para focar em estabilização, exportação de relatórios e segurança.
+- **Entregues (fim a fim com API e PostgreSQL):** Histórias #1 a #6.
+- **Não entregues no backend:** Histórias #7, #8, #9, #10 e #11.
 
 ## 4. Evidências de teste
-Adicionados testes para a consulta agregada do painel (`GROUP BY`), abertura de ocorrências e geração de alertas. Detalhe completo: `docs/sprints/sprint-3-evidencias-teste.md`.
+6 testes unitários reais implementados e passando localmente (`CT07`, `CT08`, `CT09`, `CT10`, `CT15`, `CT16`). Detalhes em `docs/sprints/sprint-4-evidencias-teste.md`.
 
 ## 5. Retrospectiva e contribuição individual
-- Ata de retrospectiva: `docs/sprints/sprint-3-retrospectiva.md`
-- Relatórios individuais de contribuição: `docs/sprints/sprint-3-contribuicao-{guilherme,felipe,marcus}.md`
+- Ata de retrospectiva: `docs/sprints/sprint-4-retrospectiva.md`
+- Relatórios individuais de contribuição:
+  - `docs/sprints/sprint-4-contribuicao.md`
 
-## 6. Riscos/impedimentos para a próxima sprint
-Preparação do ambiente de produção (Render/Vercel) e configuração de variáveis de ambiente e CORS para o deploy público final na Sprint 4.
+
+## 6. Riscos/impedimentos para a bateria final (E9)
+Apresentar o MVP com foco nas histórias #1 a #6 que funcionam de ponta a ponta no PostgreSQL e submeter o Termo de Aceite do Cliente em branco para avaliação e assinatura presencial do professor.

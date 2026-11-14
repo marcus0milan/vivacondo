@@ -1,28 +1,33 @@
 # Termo de Aceite do Cliente — VivaCondo
 
-**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047) – Felipe Savegnago Pires (RA 2840482421034) – Marcus Vinicius Milan (RA 2840482421001)
-**Cliente/PO:**  
-**Data:** 06/11/2026
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
+**Cliente/PO (Avaliador):** _________________________________________________
+**Data da avaliação:** ___/___/2026
 
 ## 1. Escopo avaliado (comparado ao Termo de Aceite do Projeto — E2b)
-| Funcionalidade aceita na E2b | Entregue? | Observação do cliente |
+*(Preenchimento da coluna "Entregue no código" pela equipe com o estado real do repositório; coluna "Observação do cliente/avaliador" reservada exclusivamente ao professor)*
+
+| Funcionalidade prevista na E2b | Entregue no sistema (API + Banco)? | Observação do cliente / avaliador (uso exclusivo do professor) |
 |---|---|---|
-| Autenticação distinta para Morador e Síndico (2 perfis) | Sim | Permissões separadas corretamente na interface |
-| Cadastro e gestão de unidades, moradores e áreas comuns | Sim | Fluxo objetivo e validações funcionando |
-| Reserva de área comum com bloqueio automático de conflito de horário | Sim | Testado tentando reservar horário sobreposto; bloqueou com mensagem clara |
-| Aprovação e recusa de reservas pelo síndico com justificativa | Sim | Exige justificativa ao recusar conforme combinado |
-| Registro e acompanhamento de ocorrências pelo morador | Sim | Morador visualiza o histórico e a resposta do síndico |
-| Painel do síndico com consulta agregada por bloco e alertas de prazo | Sim | Substitui o controle manual por planilha com visualização imediata |
-| Exportação do relatório do painel em CSV | Sim | Arquivo CSV gerado e aberto corretamente no Excel/Sheets |
+| #1 a #4 — Autenticação e cadastros base (Unidades, Moradores, Áreas Comuns) | Sim (`Program.cs` + PostgreSQL + Frontend) | |
+| #5 — Visualização de áreas comuns disponíveis | Sim (`Program.cs` + PostgreSQL + Frontend) | |
+| #6 — Reserva de área comum com bloqueio de conflito de horário | Sim (`Program.cs` + PostgreSQL + Frontend) | |
+| #7 — Aprovação/recusa de reserva pelo síndico | Não entregue no backend | |
+| #8 — Painel do síndico com consulta agregada | Não entregue no backend | |
+| #9 — Registro de ocorrências e alertas de vencimento | Não entregue no backend | |
+| #10 — Acompanhamento de status pelo morador | Parcial (apenas escopo #1 a #6) | |
+| #11 — Exportação de relatório em CSV (Could) | Não entregue no backend | |
 
-## 2. Ressalvas / pendências
-- Envio de notificações automáticas por WhatsApp/E-mail (já previsto como fora de escopo do semestre no Documento de Visão E1a) fica registrado como evolução futura, não bloqueante para o aceite deste MVP.
-- Integração bancária de boletos condominiais permanece fora do escopo do MVP acadêmico.
+## 2. Ressalvas / pendências apontadas na avaliação
+*(Espaço reservado para preenchimento pelo professor/cliente durante a validação)*
+- _________________________________________________________________________
+- _________________________________________________________________________
+- _________________________________________________________________________
 
-## 3. Parecer
+## 3. Parecer do Cliente / Avaliador
 [ ] Aceito sem ressalvas
-[x] Aceito com ressalvas (listadas acima, não bloqueantes)
-[ ] Não aceito — motivo: [...]
+[ ] Aceito com ressalvas (listadas acima)
+[ ] Não aceito — motivo: ____________________________________________________
 
 ## 4. Assinatura
-- Cliente/PO: _________________________________________________ Data: 06/11/2026
+- Cliente/PO (Professor): _______________________________________ Data: ___/___/2026

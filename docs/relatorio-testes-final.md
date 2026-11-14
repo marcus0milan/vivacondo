@@ -1,37 +1,30 @@
 # Relatório de Testes Executados — VivaCondo
 
-**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047) – Felipe Savegnago Pires (RA 2840482421034) – Marcus Vinicius Milan (RA 2840482421001)
-**Data da bateria final:** 06/11/2026
-**Escopo testado:** Todas as histórias Must, Should e Could do Termo de Aceite do Projeto (E2b)
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
+**Data do relatório:** 14/11/2026
+**Escopo testado:** Histórias #1 a #6 implementadas no sistema (API .NET + PostgreSQL + Frontend) e bateria de 6 testes unitários automatizados.
 
 ## 1. Resumo executivo
-| Métrica | Valor |
+| Métrica | Valor real no repositório |
 |---|---|
-| Total de casos de teste | 28 |
-| Passaram | 26 (na 1ª execução) / 28 (após correção) |
-| Falharam | 2 (corrigidos até 06/11, ver seção 3) |
-| Cobertura automatizada (linhas/branches) | 76% nos módulos de negócio (reservas, ocorrências, painel agregado) |
+| Total de casos de teste automatizados implementados | 6 (`CT07`, `CT08`, `CT09`, `CT10`, `CT15`, `CT16`) |
+| Passaram | 6 (100% dos testes implementados) |
+| Falharam | 0 |
+| Cobertura automatizada (linhas) | ~74% no módulo testado (execução local; sem CI configurado) |
 
-## 2. Casos de teste — visão consolidada
-| ID | Área | Tipo | Resultado | Observação |
+## 2. Casos de teste automatizados — visão consolidada
+| ID | Cenário testado | Tipo | Resultado | Arquivo |
 |---|---|---|---|---|
-| CT01–CT05 | Autenticação (2 perfis) e cadastros base (Bloco/Unidade/Morador) | Unitário / Integração | Passou | Herdados da Sprint 1 (E5) |
-| CT06–CT09 | Reserva de áreas comuns e bloqueio de conflito de horário | Unitário / Integração | Passou | Herdados da Sprint 2 (E6) |
-| CT10–CT13 | Ocorrências, alertas de vencimento e consulta agregada do painel | Integração | Passou | Herdados da Sprint 3 (E7) |
-| CT14–CT16 | Segurança (OWASP básico, XSS, permissões de rota) e exportação CSV | Unitário / Segurança | Passou | Adicionados na Sprint 4 (E8) |
-| CT17–CT20 | Regressão geral (fluxo ponta a ponta em produção) | Manual / Aceitação | 2 falharam na 1ª execução | Corrigidos antes do fechamento (ver seção 3) |
+| CT07 | Bloqueio de reserva duplicada/sobreposta na mesma área e data | Unitário | Passou | `tests/vivacondo.test.js` |
+| CT08 | Rejeição de reserva com hora de término menor ou igual à hora de início | Unitário | Passou | `tests/vivacondo.test.js` |
+| CT09 | Exigência de justificativa obrigatória ao recusar uma reserva | Unitário | Passou | `tests/vivacondo.test.js` |
+| CT10 | Agrupamento correto de ocorrências e reservas por bloco | Unitário | Passou | `tests/vivacondo.test.js` |
+| CT15 | Sanitização de tags HTML contra XSS básico na criação de ocorrência | Unitário | Passou | `tests/vivacondo.test.js` |
+| CT16 | Exportação de dados agregados em formato CSV válido | Unitário | Passou | `tests/vivacondo.test.js` |
 
-## 3. Bugs encontrados nesta bateria
-| # | Descrição | Severidade | Status |
-|---|---|---|---|
-| 1 | Painel do síndico não atualizava o contador de reservas ativas imediatamente após aprovação sem recarregar a tela | Média | Corrigido (re-renderização automática após ação do síndico) |
-| 2 | Reserva permitia hora de fim igual à hora de início (validação checava apenas `<` em vez de `<=`) | Média | Corrigido na função `criarReserva` e validado pelo teste CT08 |
+## 3. Estado real de implementação (Backend/Frontend vs. Testes)
+- **Implementado de ponta a ponta (Frontend + API `Program.cs` + PostgreSQL):** Histórias #1 a #6 (Autenticação, cadastros base, áreas comuns e criação de reservas com validação de conflito).
+- **Não implementado no `Program.cs` (Backend):** Histórias #7 (aprovação/recusa pelo síndico na API), #8 (endpoint SQL de consulta agregada), #9 (alertas de vencimento na API), #10 (histórico detalhado de ocorrências na API) e #11 (exportação CSV via API). Os testes `CT09`, `CT10`, `CT15` e `CT16` validam apenas a lógica unitária isolada em JavaScript, não endpoints do backend C#.
 
 ## 4. Testes de aceitação com cliente/PO
-Realizado em 05/11/2026 acompanhado pela equipe do projeto junto ao responsável pela validação do produto (PO/Cliente).
-Roteiro executado:
-1. Login com perfil Morador e visualização de áreas comuns ativas.
-2. Tentativa de reserva do Salão de Festas em data/horário já ocupado (validação do bloqueio de conflito em tempo real).
-3. Abertura de ocorrência de manutenção com prazo crítico.
-4. Login com perfil Síndico, aprovação de reserva pendente, resposta à ocorrência e conferência da consulta agregada por bloco e exportação em CSV.
-Resultado: MVP aprovado e validado conforme o Termo de Aceite do Cliente (`docs/termo-aceite-cliente.md`).
+A validação de aceitação presencial e o preenchimento do parecer oficial serão realizados diretamente pelo professor avaliador na apresentação do projeto, utilizando o modelo em branco em `docs/termo-aceite-cliente.md`.

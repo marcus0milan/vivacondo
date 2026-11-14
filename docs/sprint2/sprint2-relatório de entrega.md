@@ -1,29 +1,30 @@
 # Relatório de Entrega — Sprint 2 — VivaCondo
 
-**Período:** 19/09/2026 a 02/10/2026
-**Sprint Review:** 
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
+**Período:** Sprint 2
+**Sprint Review:** Realizada com a equipe do projeto
 
 ## 1. Planejado vs. entregue
 | História (E2) | Planejada para esta sprint? | Entregue? | Observação |
 |---|---|---|---|
-| #5 Visualizar áreas comuns disponíveis | Sim | Sim | Listagem com capacidade, taxa e regras de horário |
-| #6 Reservar área comum com bloqueio de conflito de horário | Sim | Sim | Regra de negócio não trivial implementada em banco e backend |
-| #7 Aprovar/recusar reserva ou gerir reservas pelo síndico | Sim | Sim | Fluxo de atualização de status com justificativa em caso de recusa |
+| #5 Visualizar áreas comuns disponíveis | Sim | Sim | Implementada no backend (`Program.cs`) e integrada ao frontend |
+| #6 Reservar área comum com bloqueio de conflito de horário | Sim | Sim | Regra de negócio e validação implementadas até a história #6 |
+| #7 Aprovar/recusar reserva pelo síndico | Sim | Não | Não concluída no backend (`Program.cs`); replanejada |
 
 ## 2. Incremento funcional demonstrável
-Fluxo completo de reservas de áreas comuns (Salão de Festas, Churrasqueira, Espaço Gourmet) pelos moradores e gestão pelo síndico. Implementada a regra de negócio crítica que impede reservas duplicadas ou com sobreposição de data/horário para a mesma área comum, além da verificação de inadimplência/bloqueio.
-Vídeo de demonstração: `docs/sprint2/media/vivacondo-sprint2.mp4`. Passo a passo para reproduzir: ver `README.md` na raiz do repositório.
+Backend em C# (.NET) com PostgreSQL e frontend integrados cobrindo as histórias #1 a #6 (autenticação, cadastros base, listagem de áreas comuns e criação de reserva com validação de conflito). Como reproduzir localmente: executar `scripts/run-local.ps1` e seguir as instruções do `README.md`.
 
 ## 3. Backlog atualizado
-Board atualizado no GitHub Projects — ao fim da Sprint 2, as histórias #5, #6 e #7 moveram de "A fazer" para "Concluído". Print do board salvo em `docs/sprint2/media/board-sprint2.png`.
+Histórias #1 a #6 concluídas no código-fonte. A história #7 permaneceu pendente no backend ao fim da Sprint 2.
 
 ## 4. Evidências de teste
-Adicionados testes unitários e de integração cobrindo o bloqueio de conflito de agenda na reserva de áreas comuns e permissões de perfil (Morador vs. Síndico). Detalhe completo: `docs/sprints/sprint-2-evidencias-teste.md`.
+Testes executados localmente validando as regras de negócio de reserva e validações de horário. Detalhe completo em `docs/sprints/sprint-2-evidencias-teste.md`.
 
 ## 5. Retrospectiva e contribuição individual
 - Ata de retrospectiva: `docs/sprints/sprint-2-retrospectiva.md`
 - Relatórios individuais de contribuição:
-  - `docs/sprints/sprint-2-contribuicao`
+  - `docs/sprints/sprint-2-contribuicao.md`
+ 
 
 ## 6. Riscos/impedimentos para a próxima sprint
-A consulta agregada do painel do síndico (história #8 da Sprint 3) exige `JOIN` entre múltiplas tabelas (unidades, moradores, ocorrências e reservas). A equipa decidiu escrever e testar a query SQL diretamente no banco antes de expor no endpoint da API.
+Ritmo de implementação das rotas adicionais no `Program.cs` (histórias #7 a #11) exigiu redução do escopo funcional entregue no backend, priorizando manter as histórias #1 a #6 estáveis e integradas ao banco PostgreSQL.
