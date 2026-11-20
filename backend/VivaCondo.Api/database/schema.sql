@@ -112,17 +112,4 @@ CREATE TABLE IF NOT EXISTS chamado (
 CREATE INDEX IF NOT EXISTS idx_chamado_morador_data
   ON chamado (morador_id, data_abertura DESC);
 
-  -- Consulta Agregada do Painel do Síndico (E7 / Sprint 3 — História #8)
--- Junta 4 tabelas: bloco, unidade, morador, ocorrencia / reserva
-SELECT 
-    b.nome AS bloco,
-    COUNT(DISTINCT u.id) AS total_unidades,
-    COUNT(DISTINCT CASE WHEN o.status IN ('aberta', 'em_analise') THEN o.id END) AS ocorrencias_ativas,
-    COUNT(DISTINCT CASE WHEN r.status IN ('pendente', 'aprovada') THEN r.id END) AS reservas_ativas
-FROM bloco b
-JOIN unidade u ON u.bloco_id = b.id
-LEFT JOIN morador m ON m.unidade_id = u.id
-LEFT JOIN ocorrencia o ON o.morador_id = m.id
-LEFT JOIN reserva r ON r.morador_id = m.id
-GROUP BY b.id, b.nome
-ORDER BY b.nome;
+
