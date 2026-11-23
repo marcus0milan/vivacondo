@@ -3,18 +3,20 @@
 **Período previsto no cronograma:** 03/10/2026 a 16/10/2026<br>
 **Sprint Review:** data e participantes não confirmados nos registros disponíveis
 
+> Este relatório preserva o estado registrado para a Sprint 3. As implementações de #7–#10 foram adicionadas somente nesta revisão posterior; elas não comprovam entrega, demonstração ou teste naquela sprint.
+
 ## 1. Planejado vs. entregue
 
 | História (E2) | Planejada? | Entregue no backend? | Observação |
 |---|---|---|---|
-| #7 Gestão de chamados pelo síndico | Sim | Não | Não há endpoint correspondente em `Program.cs` |
-| #8 Painel agregado de chamados | Sim | Não | Não há endpoint integrado nem tela correspondente |
-| #9 Upload de PDF do regimento | Sim | Não | O assistente lê arquivo de texto por caminho configurado |
-| #10 Histórico de reservas/chamados | Sim | Não | Não há endpoints de histórico |
+| #7 Gestão de chamados pelo síndico | Sim | Não | Não havia endpoint correspondente no código registrado à época |
+| #8 Painel agregado de chamados | Sim | Não | Não havia endpoint integrado nem tela correspondente à época |
+| #9 Upload de PDF do regimento | Sim | Não | Naquele período, o assistente lia arquivo de texto por caminho configurado |
+| #10 Histórico de reservas/chamados | Sim | Não | Não havia endpoints de histórico no código registrado à época |
 
 ## 2. Incremento funcional demonstrável
 
-Não foi localizado incremento integrado do escopo #7–#10 no backend atual. Não há URL pública ou gravação de demonstração desta sprint confirmada nos arquivos.
+Não foi localizado incremento integrado do escopo #7–#10 no backend no período da Sprint 3. Não há URL pública ou gravação de demonstração desta sprint confirmada nos arquivos.
 
 ## 3. Backlog atualizado
 

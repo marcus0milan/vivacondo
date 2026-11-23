@@ -11,6 +11,7 @@ Sistema de gestão condominial para organizar cadastros, reservas de áreas comu
 - Backend: C# com ASP.NET Core .NET 8.
 - Banco de dados: PostgreSQL 15+.
 - Assistente: API da OpenAI, opcional e configurada por variáveis de ambiente.
+- Leitura de PDF: PdfPig extrai o texto do regimento enviado pelo síndico; o PDF e o texto são persistidos no PostgreSQL.
 - Testes unitários auxiliares: Jest 29.
 
 ## Pré-requisitos
@@ -64,7 +65,14 @@ Sistema de gestão condominial para organizar cadastros, reservas de áreas comu
 
    A API aplica [`schema.sql`](backend/VivaCondo.Api/database/schema.sql) na inicialização. Abra `http://localhost:5080`; no primeiro acesso, configure o condomínio e a conta do síndico.
 
-5. Para habilitar o assistente, configure também `OPENAI_API_KEY` e `REGIMENTO_PATH`, apontando para um arquivo de texto local com o regimento. Sem essas configurações, o restante do sistema pode ser executado, mas o assistente não estará disponível.
+5. (Opcional) Depois de concluir o primeiro acesso, carregue dados fictícios locais:
+
+   ```powershell
+   psql -h localhost -U postgres -d vivacondo -f backend\VivaCondo.Api\database\seed-dev.sql
+   ```
+
+6. O síndico pode enviar um PDF de texto selecionável pela opção **Regimento PDF**; o arquivo e o texto extraído ficam no banco do condomínio. Para manter um arquivo de texto legado como alternativa, configure `REGIMENTO_PATH`. Sem um regimento cadastrado, o assistente informa que não está configurado.
+7. Para habilitar respostas com IA, configure também `OPENAI_API_KEY`. O restante do sistema funciona sem essa chave, mas as respostas do assistente ficam indisponíveis.
 
 Não use senhas, chaves de API ou dados pessoais reais em demonstrações. Não faça commit de valores secretos.
 
@@ -76,7 +84,7 @@ Não use senhas, chaves de API ou dados pessoais reais em demonstrações. Não 
 | `JWT_SIGNING_KEY` | Sim | Chave aleatória de pelo menos 32 bytes para assinar tokens |
 | `ASPNETCORE_URLS` | Não | Endereço local; exemplo `http://localhost:5080` |
 | `OPENAI_API_KEY` | Não | Chave para chamadas ao assistente |
-| `REGIMENTO_PATH` | Não | Caminho para o arquivo de texto do regimento |
+| `REGIMENTO_PATH` | Não | Caminho opcional para arquivo de texto legado; o PDF enviado pelo síndico é armazenado no PostgreSQL |
 
 ## Estrutura do repositório
 

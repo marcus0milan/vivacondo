@@ -3,6 +3,8 @@
 **Período registrado:** 17/10/2026 a 30/10/2026<br>
 **Sprint Review:** data e participantes não confirmados nos registros disponíveis
 
+> Este relatório registra o encerramento original da Sprint 4. As implementações posteriores de #7–#10 não comprovam entrega ou demonstração dentro do período registrado.
+
 ## 1. Planejado vs. entregue
 
 | História/atividade | Planejada? | Situação observada no backend | Observação |

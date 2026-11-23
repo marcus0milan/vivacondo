@@ -16,10 +16,10 @@ Comparar com o [Termo de Aceite do Projeto (E2b)](../backlog/sprint1/e2b.md). As
 | #4 | Reserva com validações de conflito, limite e horário | Implementada; teste integrado pendente de evidência | |
 | #5 | Abertura de chamado | Implementada; teste integrado pendente de evidência | |
 | #6 | Consulta ao regimento por assistente | Implementada no código; depende de arquivo e chave configurados | |
-| #7 | Gestão de chamados pelo síndico | Não implementada no backend | |
-| #8 | Painel com consulta agregada | Não implementado no backend | |
-| #9 | Upload de regimento em PDF | Não implementado | |
-| #10 | Histórico de reservas e chamados | Não implementado no backend | |
+| #7 | Gestão de chamados pelo síndico | Código adicionado nesta revisão; validação funcional pendente | |
+| #8 | Painel com consulta agregada | Código adicionado nesta revisão; validação funcional pendente | |
+| #9 | Upload de regimento em PDF | Código adicionado nesta revisão; validação funcional pendente | |
+| #10 | Histórico de reservas e chamados | Código adicionado nesta revisão; validação funcional pendente | |
 | #11 | Exportação de relatório CSV | Não implementada no backend | |
 | #12 | Boletos e PIX | Fora do escopo (Won't) | |
 | — | Deploy público | [URL](https://vivacondo.onrender.com) respondeu HTTP 200 em 23/11/2026; API reportou banco inicializado | Avaliador ainda deve verificar o sistema e registrar o parecer |

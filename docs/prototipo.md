@@ -13,9 +13,9 @@
 | Lista e solicitação de reserva | Morador | #4 | Seleção de área, data e horário; confirmação ou bloqueio de conflito |
 | Abertura de chamado | Morador | #5 | Categoria, localização e descrição |
 | Assistente do regimento | Morador | #6 | Pergunta e resposta baseada em arquivo configurado |
-| Gestão de chamados | Síndico | #7 | Prevista no backlog; não implementada |
-| Painel agregado | Síndico | #8 | Previsto no backlog; não implementado |
-| Upload de regimento | Síndico | #9 | Previsto no backlog; não implementado |
-| Histórico | Morador | #10 | Previsto no backlog; não implementado |
+| Gestão de chamados | Síndico | #7 | Fluxo implementado nesta revisão; desenho navegável ainda pendente |
+| Painel agregado | Síndico | #8 | Fluxo implementado nesta revisão; desenho navegável ainda pendente |
+| Upload de regimento | Síndico | #9 | Fluxo implementado nesta revisão; desenho navegável ainda pendente |
+| Histórico | Morador | #10 | Fluxo implementado nesta revisão; desenho navegável ainda pendente |
 
 O protótipo deve ser criado com telas navegáveis para as histórias aceitas e deve distinguir claramente os fluxos implementados dos que continuam planejados.

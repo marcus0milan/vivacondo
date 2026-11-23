@@ -28,11 +28,11 @@
 | 4 | Must | Entregue | Reserva com validações no backend |
 | 5 | Must | Entregue | Abertura de chamados |
 | 6 | Must | Entregue com configuração | Requer arquivo de regimento e chave da OpenAI |
-| 7 | Must | Não entregue | Sem endpoint de gestão de chamados |
-| 8 | Must | Não entregue | Sem painel/endpoint agregado no backend |
-| 9 | Should | Não entregue | Regimento permanece em arquivo de texto |
-| 10 | Should | Não entregue | Sem histórico completo no backend |
+| 7 | Must | Implementação adicionada após o registro original da Sprint 4; validação pendente | Síndico lista chamados e atualiza status/observação; transições finais não podem ser reabertas |
+| 8 | Must | Implementação adicionada após o registro original da Sprint 4; validação pendente | `/api/dashboard/calls` agrega chamados por categoria e status no PostgreSQL |
+| 9 | Should | Implementação adicionada após o registro original da Sprint 4; validação pendente | Síndico envia PDF; arquivo e texto extraído são persistidos por condomínio no PostgreSQL |
+| 10 | Should | Implementação adicionada após o registro original da Sprint 4; validação pendente | `/api/history` retorna apenas reservas e chamados do morador autenticado |
 | 11 | Could | Não entregue | A lógica de teste isolada não é exportação integrada |
 | 12 | Won't | Fora de escopo | Conforme planejado |
 
-O board do projeto não foi localizado nos arquivos versionados; esta tabela registra a situação observada no código, não substitui o histórico do board.
+O board do projeto não foi localizado nos arquivos versionados; esta tabela registra a situação do código nesta revisão, não substitui o histórico do board nem comprova entrega durante as sprints originais.

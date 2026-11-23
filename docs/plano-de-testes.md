@@ -27,18 +27,26 @@ O workflow [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) executa o b
 
 Os cenários T1–T14 e seus resultados manuais estão em [Evidências da Sprint 1](sprint1/sprint1-evidencias-testes.md). Os cenários abaixo ainda precisam de execução registrada; não são considerados aprovados.
 
-| ID | História | Cenário | Resultado esperado | Situação |
-|---|---:|---|---|---|
-| T15 | #4 | Solicitar reserva em horário livre e futuro | Reserva criada como `PENDENTE` | Pendente de execução com PostgreSQL |
-| T16 | #4 | Criar reserva sobreposta na mesma área/data | Requisição recusada; não cria segunda reserva | Pendente de execução com PostgreSQL |
-| T17 | #4 | Ultrapassar limite de duas reservas ativas na unidade/mês | Requisição recusada | Pendente de execução com PostgreSQL |
-| T18 | #4 | Solicitar reserva após o horário limite da área | Requisição recusada | Pendente de execução com PostgreSQL |
-| T19 | #5 | Abrir chamado com dados válidos | Chamado salvo com status `ABERTO` | Pendente de execução com PostgreSQL |
-| T20 | #5 | Abrir chamado com campo obrigatório vazio | Requisição recusada | Pendente de execução com PostgreSQL |
-| T21 | #6 | Perguntar sobre regra presente no regimento | Resposta baseada no texto enviado à IA | Pendente; requer arquivo e chave |
-| T22 | #6 | Perguntar sobre conteúdo ausente do regimento | Mensagem de informação não encontrada | Pendente de execução |
-| T23 | #1 | Usuário tentar acessar operação exclusiva do outro perfil | Acesso negado | Verificar em execução integrada |
-| T24 | #6 | Iniciar assistente sem `REGIMENTO_PATH` | Resposta 503 informativa | Pendente de execução |
+| ID | História | Cenário | Entrada | Resultado esperado | Prioridade | Situação |
+|---|---:|---|---|---|---|---|
+| T15 | #4 | Solicitar reserva em horário livre e futuro | Morador autenticado; área do condomínio; amanhã, 18:00–19:00 | Criada como `PENDENTE` | Alta | Pendente de execução com PostgreSQL |
+| T16 | #4 | Criar reserva sobreposta na mesma área/data | Reserva existente 18:00–19:00; nova solicitação 18:30–19:30 | HTTP 409; segunda reserva não é criada | Alta | Pendente de execução com PostgreSQL |
+| T17 | #4 | Ultrapassar limite de reservas ativas | Duas reservas pendentes/confirmadas da unidade no mesmo mês; terceira solicitação | HTTP 409; terceira reserva não é criada | Alta | Pendente de execução com PostgreSQL |
+| T18 | #4 | Solicitar reserva após o horário limite da área | Área com limite 22:00; reserva termina às 22:30 | Requisição recusada | Média | Pendente de execução com PostgreSQL |
+| T19 | #5 | Abrir chamado com dados válidos | Categoria, local e descrição não vazios | Chamado salvo com status `ABERTO` | Alta | Pendente de execução com PostgreSQL |
+| T20 | #5 | Abrir chamado com campo obrigatório vazio | Descrição vazia | HTTP 400; chamado não é criado | Média | Pendente de execução com PostgreSQL |
+| T21 | #6 | Perguntar sobre regra presente no regimento | Regimento carregado e chave de IA de teste configurada | Resposta baseada nos trechos do regimento | Média | Pendente; requer serviço de IA |
+| T22 | #6 | Perguntar sobre conteúdo ausente do regimento | Pergunta sem termos presentes no documento | Mensagem de informação não encontrada | Média | Pendente de execução |
+| T23 | #1 | Usuário tentar acessar operação exclusiva do outro perfil | Token de morador em `PUT /api/calls/{id}` | HTTP 403 | Alta | Pendente de execução integrada |
+| T24 | #6 | Iniciar assistente sem regimento configurado | Sem PDF no banco e sem `REGIMENTO_PATH` válido | HTTP 503 informativo | Média | Pendente de execução |
+| T25 | #7 | Síndico atualizar chamado aberto para em andamento | `PUT /api/calls/{id}` com `EM_ANDAMENTO` e observação | Status e observação persistidos | Alta | Pendente de execução integrada |
+| T26 | #7 | Tentar pular etapa ou reabrir chamado finalizado | `ABERTO` → `CONCLUIDO`, ou `CONCLUIDO` → `EM_ANDAMENTO` | HTTP 409; status não muda | Alta | Pendente de execução integrada |
+| T27 | #7 | Cancelar chamado sem justificativa | Status `CANCELADO`, observação vazia | HTTP 400; status não muda | Alta | Pendente de execução integrada |
+| T28 | #8 | Consultar painel agregado | Chamados de duas categorias e status diferentes no mesmo condomínio | Totais e agrupamentos conferem com os registros no PostgreSQL | Alta | Pendente de execução integrada |
+| T29 | #9 | Enviar PDF válido e consultar seu conteúdo | PDF com texto selecionável, 1–300 páginas e até 10 MB | PDF e texto ficam no banco; assistente consulta o novo texto | Alta | Pendente de execução integrada |
+| T30 | #9 | Rejeitar arquivo que não seja PDF válido | Arquivo com extensão `.pdf` sem assinatura PDF ou PDF sem texto | HTTP 400; regimento anterior permanece disponível | Alta | Pendente de execução integrada |
+| T31 | #10 | Consultar histórico como morador | Token de um morador com registros próprios e de outro morador | Resposta contém somente os registros do usuário autenticado | Alta | Pendente de execução integrada |
+| T32 | #9 | Atualizar regimento existente | Enviar segundo PDF válido para o mesmo condomínio | Novo PDF/texto substitui o anterior; outro condomínio não é alterado | Média | Pendente de execução integrada |
 
 ## 4. Casos automatizados no repositório
 

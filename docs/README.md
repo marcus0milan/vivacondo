@@ -17,6 +17,8 @@ Este índice reúne os documentos produzidos para acompanhar o Projeto VivaCondo
 - [Diagramas UML](modelagem/e3a.md)
 - [DER](modelagem/e3b.md)
 - [DDL](modelagem/e3c.md)
+- [Schema SQL aplicado pela API](../backend/VivaCondo.Api/database/schema.sql)
+- [Seed de desenvolvimento](../backend/VivaCondo.Api/database/seed-dev.sql)
 
 ## E4 — Repositório e plano de testes
 

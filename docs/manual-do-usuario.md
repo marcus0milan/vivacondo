@@ -2,7 +2,7 @@
 
 **Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)
 
-**Ambiente publicado:** [https://vivacondo.onrender.com](https://vivacondo.onrender.com), acessível em 23/11/2026; a API reportou banco inicializado. Capturas reais de produção ainda não foram fornecidas. As instruções de instalação local estão no [README](../README.md).
+**Ambiente publicado:** [https://vivacondo.onrender.com](https://vivacondo.onrender.com), acessível em 23/11/2026; a API reportou banco inicializado. A validação das novas funções e as capturas reais de produção ainda estão pendentes. As instruções de instalação local estão no [README](../README.md).
 
 ## 1. Introdução
 
@@ -66,7 +66,34 @@ Informe nome, e-mail, CPF e unidade. CPF e e-mail não podem pertencer a outro c
 
 Informe nome da área, capacidade máxima e horário limite de uso.
 
-## 5. Perguntas frequentes
+### Como gerenciar chamados
+
+1. Acesse **Gestão de chamados**.
+2. Confira a descrição, a categoria, a localização e a unidade do morador.
+3. Escolha um próximo status permitido: um chamado aberto pode ir para **Em andamento** ou **Cancelado**; um chamado em andamento pode ir para **Concluído** ou **Cancelado**.
+4. Registre uma observação. Para cancelar, a justificativa é obrigatória.
+5. Chamados concluídos ou cancelados não podem ser reabertos nesta versão.
+
+### Como consultar o painel de chamados
+
+1. Acesse **Painel de chamados**.
+2. Consulte os totais por status e a tabela agrupada por categoria e status.
+3. Os números são calculados a partir dos chamados registrados para o condomínio.
+
+### Como atualizar o regimento
+
+1. Acesse **Regimento PDF**.
+2. Selecione um PDF com texto selecionável, de até 10 MB e 300 páginas.
+3. Envie o arquivo. O PDF e o texto extraído substituem a versão anterior e ficam armazenados no banco do condomínio.
+4. Para responder perguntas, o assistente ainda precisa da chave de API da OpenAI configurada pelo responsável técnico.
+
+## 5. Histórico do Morador
+
+1. Acesse **Meu histórico**.
+2. Consulte suas próprias reservas e chamados, com os dados e status atuais.
+3. O histórico é filtrado pela conta autenticada; não mostra solicitações de outros moradores.
+
+## 6. Perguntas frequentes
 
 **Minha reserva foi recusada por conflito**
 
@@ -78,7 +105,7 @@ No limite atual, cada unidade pode ter até duas reservas ativas por mês. Reser
 
 **O assistente não respondeu minha dúvida**
 
-Confirme se a chave da OpenAI e o caminho do arquivo do regimento estão configurados no ambiente. O assistente responde apenas com base no conteúdo disponível.
+Confirme se a chave da OpenAI está configurada e se o síndico enviou um PDF de regimento. Como alternativa de compatibilidade, o responsável técnico pode configurar `REGIMENTO_PATH` para um arquivo de texto. O assistente responde apenas com base no conteúdo disponível.
 
 **Não consigo iniciar a aplicação**
 

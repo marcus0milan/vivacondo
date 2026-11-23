@@ -7,12 +7,20 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using UglyToad.PdfPig;
+using UglyToad.PdfPig.Core;
+using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
+using UglyToad.PdfPig.Exceptions;
 
+const long maximumRegulationPdfBytes = 10 * 1024 * 1024;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<FormOptions>(options =>
+    options.MultipartBodyLengthLimit = maximumRegulationPdfBytes + 1024 * 1024);
 var connectionString = builder.Configuration.GetConnectionString("Default")
     ?? Environment.GetEnvironmentVariable("ConnectionStrings__Default");
 var jwtKey = builder.Configuration["Jwt:Key"] ?? Environment.GetEnvironmentVariable("JWT_SIGNING_KEY");
@@ -231,6 +239,255 @@ managerApi.MapGet("/units", async (ClaimsPrincipal principal, NpgsqlDataSource d
     }
     return Results.Ok(units);
 });
+
+managerApi.MapGet("/calls", async (ClaimsPrincipal principal, NpgsqlDataSource db) =>
+{
+    await using var connection = await db.OpenConnectionAsync();
+    await using var command = new NpgsqlCommand(
+        """
+        SELECT c.id, u.nome, un.bloco, un.numero, c.categoria, c.localizacao,
+               c.descricao, c.status, c.observacao_sindico, c.data_abertura
+        FROM chamado c
+        JOIN morador m ON m.id = c.morador_id
+        JOIN usuario u ON u.id = m.id
+        JOIN unidade un ON un.id = m.unidade_id
+        WHERE c.condominio_id = @condominiumId
+        ORDER BY c.data_abertura DESC, c.id DESC
+        """,
+        connection);
+    command.Parameters.AddWithValue("condominiumId", GetCondominiumId(principal));
+    await using var reader = await command.ExecuteReaderAsync();
+    var calls = new List<ManagedCallResponse>();
+    while (await reader.ReadAsync())
+    {
+        calls.Add(new ManagedCallResponse(
+            reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3),
+            reader.GetString(4), reader.GetString(5), reader.GetString(6), reader.GetString(7),
+            reader.GetString(8), reader.GetDateTime(9)));
+    }
+    return Results.Ok(calls);
+});
+
+managerApi.MapPut("/calls/{id:int}", async (
+    int id,
+    CallStatusUpdateRequest request,
+    ClaimsPrincipal principal,
+    NpgsqlDataSource db) =>
+{
+    var newStatus = request.Status?.Trim().ToUpperInvariant();
+    var observation = request.Observation?.Trim() ?? string.Empty;
+    if (id <= 0 || newStatus is not ("EM_ANDAMENTO" or "CONCLUIDO" or "CANCELADO"))
+    {
+        return Results.BadRequest(new { message = "Informe um status válido para o chamado." });
+    }
+    if (observation.Length > 2000)
+    {
+        return Results.BadRequest(new { message = "A observação deve ter no máximo 2000 caracteres." });
+    }
+    if (newStatus == "CANCELADO" && string.IsNullOrWhiteSpace(observation))
+    {
+        return Results.BadRequest(new { message = "Informe a justificativa para cancelar o chamado." });
+    }
+
+    await using var connection = await db.OpenConnectionAsync();
+    await using var transaction = await connection.BeginTransactionAsync();
+    string? currentStatus;
+    await using (var currentCommand = new NpgsqlCommand(
+        "SELECT status FROM chamado WHERE id = @id AND condominio_id = @condominiumId FOR UPDATE",
+        connection, transaction))
+    {
+        currentCommand.Parameters.AddWithValue("id", id);
+        currentCommand.Parameters.AddWithValue("condominiumId", GetCondominiumId(principal));
+        currentStatus = (string?)await currentCommand.ExecuteScalarAsync();
+    }
+
+    if (currentStatus is null)
+    {
+        await transaction.RollbackAsync();
+        return Results.NotFound(new { message = "Chamado não encontrado neste condomínio." });
+    }
+    if (!IsAllowedCallTransition(currentStatus, newStatus))
+    {
+        await transaction.RollbackAsync();
+        return Results.Conflict(new { message = $"Não é permitido alterar o chamado de {currentStatus} para {newStatus}." });
+    }
+
+    await using var updateCommand = new NpgsqlCommand(
+        """
+        UPDATE chamado
+        SET status = @status,
+            observacao_sindico = CASE WHEN @observation = '' THEN observacao_sindico ELSE @observation END
+        WHERE id = @id AND condominio_id = @condominiumId
+        RETURNING id, status, observacao_sindico
+        """,
+        connection, transaction);
+    updateCommand.Parameters.AddWithValue("id", id);
+    updateCommand.Parameters.AddWithValue("condominiumId", GetCondominiumId(principal));
+    updateCommand.Parameters.AddWithValue("status", newStatus);
+    updateCommand.Parameters.AddWithValue("observation", observation);
+    await using var updatedReader = await updateCommand.ExecuteReaderAsync();
+    await updatedReader.ReadAsync();
+    var updatedCall = new CallStatusResponse(
+        updatedReader.GetInt32(0), updatedReader.GetString(1), updatedReader.GetString(2));
+    await updatedReader.CloseAsync();
+    await transaction.CommitAsync();
+    return Results.Ok(updatedCall);
+});
+
+managerApi.MapGet("/dashboard/calls", async (ClaimsPrincipal principal, NpgsqlDataSource db) =>
+{
+    await using var connection = await db.OpenConnectionAsync();
+    await using var command = new NpgsqlCommand(
+        """
+        SELECT categoria, status, COUNT(*)::INT
+        FROM chamado
+        WHERE condominio_id = @condominiumId
+        GROUP BY categoria, status
+        ORDER BY lower(categoria), status
+        """,
+        connection);
+    command.Parameters.AddWithValue("condominiumId", GetCondominiumId(principal));
+    await using var reader = await command.ExecuteReaderAsync();
+    var groups = new List<CallCategoryStatusCount>();
+    var total = 0;
+    var open = 0;
+    var inProgress = 0;
+    var completed = 0;
+    var cancelled = 0;
+    while (await reader.ReadAsync())
+    {
+        var status = reader.GetString(1);
+        var count = reader.GetInt32(2);
+        groups.Add(new CallCategoryStatusCount(reader.GetString(0), status, count));
+        total += count;
+        switch (status)
+        {
+            case "ABERTO": open += count; break;
+            case "EM_ANDAMENTO": inProgress += count; break;
+            case "CONCLUIDO": completed += count; break;
+            case "CANCELADO": cancelled += count; break;
+        }
+    }
+    return Results.Ok(new CallDashboardResponse(total, open, inProgress, completed, cancelled, groups));
+});
+
+managerApi.MapPost("/regulation", async (
+    IFormFile file,
+    ClaimsPrincipal principal,
+    NpgsqlDataSource db,
+    ILogger<Program> logger) =>
+{
+    if (file is null || file.Length == 0)
+    {
+        return Results.BadRequest(new { message = "Selecione um arquivo PDF não vazio." });
+    }
+    if (file.Length > maximumRegulationPdfBytes)
+    {
+        return Results.BadRequest(new { message = "O PDF deve ter no máximo 10 MB." });
+    }
+    if (!string.Equals(Path.GetExtension(file.FileName), ".pdf", StringComparison.OrdinalIgnoreCase))
+    {
+        return Results.BadRequest(new { message = "Envie um arquivo com extensão PDF." });
+    }
+
+    await using var uploadStream = new MemoryStream();
+    await file.CopyToAsync(uploadStream);
+    var pdfBytes = uploadStream.ToArray();
+    if (pdfBytes.Length < 8 ||
+        !pdfBytes.AsSpan(0, 5).SequenceEqual("%PDF-"u8) ||
+        !Encoding.Latin1.GetString(pdfBytes, Math.Max(0, pdfBytes.Length - 2048), Math.Min(2048, pdfBytes.Length)).Contains("%%EOF", StringComparison.Ordinal))
+    {
+        return Results.BadRequest(new { message = "O arquivo enviado não parece ser um PDF válido." });
+    }
+
+    string extractedText;
+    int pageCount;
+    try
+    {
+        using var pdfStream = new MemoryStream(pdfBytes, writable: false);
+        using var document = PdfDocument.Open(pdfStream);
+        pageCount = document.NumberOfPages;
+        if (pageCount is < 1 or > 300)
+        {
+            return Results.BadRequest(new { message = "O PDF deve conter entre 1 e 300 páginas." });
+        }
+        var textBuilder = new StringBuilder();
+        foreach (var page in document.GetPages())
+        {
+            var pageText = ContentOrderTextExtractor.GetText(page).Trim();
+            if (pageText.Length == 0) continue;
+            if (textBuilder.Length + pageText.Length + (textBuilder.Length == 0 ? 0 : 2) > 1_000_000)
+            {
+                return Results.BadRequest(new { message = "O texto extraído do PDF excede o limite de 1 milhão de caracteres." });
+            }
+            if (textBuilder.Length > 0) textBuilder.Append("\n\n");
+            textBuilder.Append(pageText);
+        }
+        extractedText = textBuilder.ToString();
+    }
+    catch (PdfDocumentEncryptedException exception)
+    {
+        logger.LogInformation(exception, "O PDF enviado como regimento está protegido por senha.");
+        return Results.BadRequest(new { message = "PDFs protegidos por senha não são aceitos." });
+    }
+    catch (PdfDocumentFormatException exception)
+    {
+        logger.LogInformation(exception, "O arquivo enviado como regimento não pôde ser lido como PDF.");
+        return Results.BadRequest(new { message = "Não foi possível ler o PDF enviado. Verifique se o arquivo não está corrompido ou protegido por senha." });
+    }
+    catch (InvalidOperationException exception)
+    {
+        logger.LogInformation(exception, "O PDF enviado não pôde ser processado.");
+        return Results.BadRequest(new { message = "Não foi possível processar o PDF enviado. Verifique se ele não está protegido por senha." });
+    }
+    catch (ArgumentException exception)
+    {
+        logger.LogInformation(exception, "O PDF enviado contém argumentos ou estruturas inválidas.");
+        return Results.BadRequest(new { message = "O arquivo PDF enviado é inválido ou está corrompido." });
+    }
+
+    if (string.IsNullOrWhiteSpace(extractedText))
+    {
+        return Results.BadRequest(new { message = "O PDF não contém texto selecionável. PDFs digitalizados como imagem não são aceitos." });
+    }
+
+    var fileName = Path.GetFileName(file.FileName.Replace('\\', '/'));
+    if (string.IsNullOrWhiteSpace(fileName) || fileName.Length > 255)
+    {
+        return Results.BadRequest(new { message = "O nome do arquivo deve ter até 255 caracteres." });
+    }
+
+    await using var connection = await db.OpenConnectionAsync();
+    await using var command = new NpgsqlCommand(
+        """
+        INSERT INTO regimento (condominio_id, nome_arquivo, conteudo_pdf, texto_extraido, numero_paginas)
+        VALUES (@condominiumId, @fileName, @pdf, @text, @pageCount)
+        ON CONFLICT (condominio_id) DO UPDATE
+        SET nome_arquivo = EXCLUDED.nome_arquivo,
+            conteudo_pdf = EXCLUDED.conteudo_pdf,
+            texto_extraido = EXCLUDED.texto_extraido,
+            numero_paginas = EXCLUDED.numero_paginas,
+            atualizado_em = CURRENT_TIMESTAMP
+        RETURNING atualizado_em
+        """,
+        connection);
+    command.Parameters.AddWithValue("condominiumId", GetCondominiumId(principal));
+    command.Parameters.AddWithValue("fileName", fileName);
+    command.Parameters.AddWithValue("pdf", pdfBytes);
+    command.Parameters.AddWithValue("text", extractedText);
+    command.Parameters.AddWithValue("pageCount", pageCount);
+    try
+    {
+        var updatedAt = (DateTime)(await command.ExecuteScalarAsync())!;
+        return Results.Ok(new RegulationUploadResponse(fileName, pageCount, extractedText.Length, updatedAt));
+    }
+    catch (PostgresException exception)
+    {
+        logger.LogError(exception, "Não foi possível persistir o regimento do condomínio {CondominiumId}.", GetCondominiumId(principal));
+        return Results.Problem("Não foi possível salvar o regimento no banco de dados. Tente novamente.", statusCode: StatusCodes.Status500InternalServerError);
+    }
+})
+    .DisableAntiforgery();
 
 managerApi.MapPost("/units", async (UnitRequest request, ClaimsPrincipal principal, NpgsqlDataSource db) =>
 {
@@ -561,8 +818,60 @@ api.MapPost("/calls", async (CallRequest request, ClaimsPrincipal principal, Npg
         new CallResponse(reader.GetInt32(0), reader.GetString(1), reader.GetDateTime(2)));
 }).RequireAuthorization(new AuthorizeAttribute { Roles = "MORADOR" });
 
+api.MapGet("/history", async (ClaimsPrincipal principal, NpgsqlDataSource db) =>
+{
+    var userId = GetUserId(principal);
+    await using var connection = await db.OpenConnectionAsync();
+
+    var reservations = new List<HistoryReservationResponse>();
+    await using (var reservationCommand = new NpgsqlCommand(
+        """
+        SELECT r.id, a.nome, r.data, to_char(r.hora_inicio, 'HH24:MI'),
+               to_char(r.hora_fim, 'HH24:MI'), r.status
+        FROM reserva r
+        JOIN area_comum a ON a.id = r.area_comum_id
+        WHERE r.morador_id = @userId
+        ORDER BY r.data DESC, r.hora_inicio DESC
+        """,
+        connection))
+    {
+        reservationCommand.Parameters.AddWithValue("userId", userId);
+        await using var reader = await reservationCommand.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            reservations.Add(new HistoryReservationResponse(
+                reader.GetInt32(0), reader.GetString(1), reader.GetFieldValue<DateOnly>(2),
+                reader.GetString(3), reader.GetString(4), reader.GetString(5)));
+        }
+    }
+
+    var calls = new List<HistoryCallResponse>();
+    await using (var callCommand = new NpgsqlCommand(
+        """
+        SELECT id, categoria, localizacao, descricao, status, data_abertura
+        FROM chamado
+        WHERE morador_id = @userId
+        ORDER BY data_abertura DESC, id DESC
+        """,
+        connection))
+    {
+        callCommand.Parameters.AddWithValue("userId", userId);
+        await using var reader = await callCommand.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            calls.Add(new HistoryCallResponse(
+                reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3),
+                reader.GetString(4), reader.GetDateTime(5)));
+        }
+    }
+
+    return Results.Ok(new ResidentHistoryResponse(reservations, calls));
+}).RequireAuthorization(new AuthorizeAttribute { Roles = "MORADOR" });
+
 api.MapPost("/assistant/questions", async (
     AssistantQuestionRequest request,
+    ClaimsPrincipal principal,
+    NpgsqlDataSource db,
     IConfiguration configuration,
     IHttpClientFactory httpClientFactory,
     IWebHostEnvironment environment,
@@ -573,17 +882,30 @@ api.MapPost("/assistant/questions", async (
         return Results.BadRequest(new { message = "Escreva uma pergunta (até 1000 caracteres)." });
     }
 
-    var regulationPath = configuration["Regimento:Path"] ?? Environment.GetEnvironmentVariable("REGIMENTO_PATH");
-    if (string.IsNullOrWhiteSpace(regulationPath))
+    string? regulation;
+    await using (var connection = await db.OpenConnectionAsync())
+    await using (var command = new NpgsqlCommand(
+        "SELECT texto_extraido FROM regimento WHERE condominio_id = @condominiumId",
+        connection))
     {
-        return Results.Problem("O regimento ainda não foi configurado. Defina REGIMENTO_PATH para um arquivo de texto com o regimento.", statusCode: StatusCodes.Status503ServiceUnavailable);
+        command.Parameters.AddWithValue("condominiumId", GetCondominiumId(principal));
+        regulation = (string?)await command.ExecuteScalarAsync();
     }
-    var fullRegulationPath = Path.GetFullPath(regulationPath, environment.ContentRootPath);
-    if (!File.Exists(fullRegulationPath))
+
+    if (string.IsNullOrWhiteSpace(regulation))
     {
-        return Results.Problem("O arquivo de regimento configurado não foi encontrado.", statusCode: StatusCodes.Status503ServiceUnavailable);
+        var regulationPath = configuration["Regimento:Path"] ?? Environment.GetEnvironmentVariable("REGIMENTO_PATH");
+        if (string.IsNullOrWhiteSpace(regulationPath))
+        {
+            return Results.Problem("O regimento ainda não foi configurado. Peça ao síndico para enviar um PDF ou configure REGIMENTO_PATH.", statusCode: StatusCodes.Status503ServiceUnavailable);
+        }
+        var fullRegulationPath = Path.GetFullPath(regulationPath, environment.ContentRootPath);
+        if (!File.Exists(fullRegulationPath))
+        {
+            return Results.Problem("O arquivo de regimento configurado não foi encontrado.", statusCode: StatusCodes.Status503ServiceUnavailable);
+        }
+        regulation = await File.ReadAllTextAsync(fullRegulationPath);
     }
-    var regulation = await File.ReadAllTextAsync(fullRegulationPath);
     var passages = SelectRelevantPassages(regulation, request.Question);
     if (passages.Count == 0)
     {
@@ -680,6 +1002,14 @@ static string FindFrontendPath(string contentRoot)
     }
     throw new DirectoryNotFoundException("Não foi possível localizar frontend/index.html.");
 }
+
+static bool IsAllowedCallTransition(string currentStatus, string nextStatus) =>
+    currentStatus switch
+    {
+        "ABERTO" => nextStatus is "EM_ANDAMENTO" or "CANCELADO",
+        "EM_ANDAMENTO" => nextStatus is "CONCLUIDO" or "CANCELADO",
+        _ => false,
+    };
 
 static async Task<SessionUser?> ReadSessionUserAsync(NpgsqlConnection connection, int userId)
 {
@@ -875,6 +1205,7 @@ record ResidentRequest(string Name, string Email, string Cpf, int UnitId, string
 record AreaRequest(string Name, int Capacity, string UsageLimit);
 record ReservationRequest(int CommonAreaId, DateOnly Date, string StartTime, string EndTime);
 record CallRequest(string Category, string Location, string Description);
+record CallStatusUpdateRequest(string? Status, string? Observation);
 record AssistantQuestionRequest(string Question);
 record SessionUser(int Id, string Name, string Email, string Profile, int CondominiumId, string CondominiumName, string Address, int? UnitId);
 record UnitResponse(int Id, string Block, string Number, int ResidentCount);
@@ -882,4 +1213,18 @@ record ResidentResponse(int Id, string Name, string Email, string Cpf, int UnitI
 record AreaResponse(int Id, string Name, int Capacity, string UsageLimit);
 record ReservationResponse(int Id, int CommonAreaId, DateOnly Date, TimeOnly StartTime, TimeOnly EndTime, string Status);
 record CallResponse(int Id, string Status, DateTime OpenedAt);
+record ManagedCallResponse(
+    int Id, string ResidentName, string Block, string Unit, string Category, string Location,
+    string Description, string Status, string Observation, DateTime OpenedAt);
+record CallStatusResponse(int Id, string Status, string Observation);
+record CallCategoryStatusCount(string Category, string Status, int Count);
+record CallDashboardResponse(
+    int Total, int Open, int InProgress, int Completed, int Cancelled,
+    IReadOnlyList<CallCategoryStatusCount> Groups);
+record HistoryReservationResponse(int Id, string AreaName, DateOnly Date, string StartTime, string EndTime, string Status);
+record HistoryCallResponse(int Id, string Category, string Location, string Description, string Status, DateTime OpenedAt);
+record ResidentHistoryResponse(
+    IReadOnlyList<HistoryReservationResponse> Reservations,
+    IReadOnlyList<HistoryCallResponse> Calls);
+record RegulationUploadResponse(string FileName, int PageCount, int ExtractedCharacters, DateTimeOffset UpdatedAt);
 record AssistantAnswerResponse(string Answer);

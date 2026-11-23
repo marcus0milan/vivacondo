@@ -2,7 +2,7 @@
 
 **Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)
 
-Este DER descreve as oito tabelas do schema PostgreSQL aplicado pela API. O relacionamento muitos-para-muitos entre moradores e áreas comuns ocorre ao longo do tempo e é resolvido pela entidade associativa `reserva`. O regimento é um arquivo externo, não uma tabela.
+Este DER descreve as nove tabelas do schema PostgreSQL aplicado pela API. O relacionamento muitos-para-muitos entre moradores e áreas comuns ocorre ao longo do tempo e é resolvido pela entidade associativa `reserva`. A tabela `regimento` armazena o PDF e o texto extraído por condomínio.
 
 ## 1. Diagrama
 
@@ -12,6 +12,7 @@ erDiagram
     CONDOMINIO ||--o{ SINDICO : administra
     CONDOMINIO ||--o{ AREA_COMUM : disponibiliza
     CONDOMINIO ||--o{ CHAMADO : recebe
+    CONDOMINIO ||--o| REGIMENTO : possui
     USUARIO ||--o| SINDICO : perfil
     USUARIO ||--o| MORADOR : perfil
     UNIDADE ||--o{ MORADOR : vincula
@@ -71,6 +72,15 @@ erDiagram
         text descricao
         varchar status
         timestamp data_abertura
+        text observacao_sindico
+    }
+    REGIMENTO {
+        int condominio_id PK,FK
+        varchar nome_arquivo
+        bytea conteudo_pdf
+        text texto_extraido
+        int numero_paginas
+        timestamptz atualizado_em
     }
 ```
 
@@ -152,8 +162,20 @@ erDiagram
 | localizacao | VARCHAR(150) | NOT NULL | Local do problema |
 | descricao | TEXT | NOT NULL | Descrição |
 | status | VARCHAR(20) | NOT NULL, DEFAULT `ABERTO`, CHECK | `ABERTO`, `EM_ANDAMENTO`, `CONCLUIDO` ou `CANCELADO` |
+| observacao_sindico | TEXT | NOT NULL, DEFAULT `''` | Observação registrada pelo síndico ao atualizar o chamado |
 | data_abertura | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Data e hora da abertura |
+
+### Tabela: `regimento`
+
+| Campo | Tipo PostgreSQL | Restrições | Descrição |
+|---|---|---|---|
+| condominio_id | INT | PK, FK → `condominio.id`, ON DELETE CASCADE | Condomínio dono do regimento |
+| nome_arquivo | VARCHAR(255) | NOT NULL | Nome original para exibição |
+| conteudo_pdf | BYTEA | NOT NULL | Arquivo PDF enviado pelo síndico |
+| texto_extraido | TEXT | NOT NULL | Texto extraído e indexado pelo assistente |
+| numero_paginas | INT | NOT NULL, CHECK 1–300 | Quantidade de páginas do PDF |
+| atualizado_em | TIMESTAMPTZ | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Data da última atualização |
 
 ## 3. Observação de normalização
 
-As tabelas de perfil (`morador` e `sindico`) estendem `usuario` por chave primária compartilhada. `reserva` resolve a relação N:N entre moradores e áreas comuns. O arquivo do regimento é configurado por caminho no ambiente e não é persistido neste schema.
+As tabelas de perfil (`morador` e `sindico`) estendem `usuario` por chave primária compartilhada. `reserva` resolve a relação N:N entre moradores e áreas comuns. `regimento` mantém um PDF e seu texto extraído por condomínio para que o assistente consulte o documento persistido no PostgreSQL.

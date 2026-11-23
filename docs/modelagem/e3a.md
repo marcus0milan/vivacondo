@@ -2,7 +2,7 @@
 
 **Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)
 
-Os diagramas abaixo separam as funcionalidades implementadas das previstas no backlog. O assistente é um serviço que lê um arquivo de texto; não há tabela `regimento` no banco de dados atual.
+Os diagramas abaixo separam as funcionalidades implementadas das previstas no backlog. O assistente consulta o texto extraído da tabela `regimento`, com fallback opcional para arquivo de texto legado.
 
 ## 1. Diagrama de Casos de Uso
 
@@ -20,6 +20,10 @@ flowchart LR
     UC6[Solicitar reserva]
     UC7[Abrir chamado de manutenção]
     UC8[Consultar regimento pelo assistente]
+    UC9[Gerenciar chamados]
+    UC10[Consultar painel de chamados]
+    UC11[Atualizar regimento por PDF]
+    UC12[Consultar histórico pessoal]
 
     Visitante --> UC1
     Morador --> UC2
@@ -31,6 +35,10 @@ flowchart LR
     Sindico --> UC3
     Sindico --> UC4
     Sindico --> UC5
+    Sindico --> UC9
+    Sindico --> UC10
+    Sindico --> UC11
+    Morador --> UC12
 ```
 
 ## 2. Diagrama de Classes
@@ -78,6 +86,12 @@ classDiagram
         +descricao: string
         +status: string
         +dataAbertura: datetime
+        +observacaoSindico: string
+    }
+    class Regimento {
+        +nomeArquivo: string
+        +numeroPaginas: int
+        +atualizadoEm: datetime
     }
     class AssistenteRegimento {
         +consultar(pergunta: string) string
@@ -88,6 +102,7 @@ classDiagram
     Condominio "1" -- "0..*" Unidade : possui
     Condominio "1" -- "0..*" AreaComum : disponibiliza
     Condominio "1" -- "0..*" Chamado : recebe
+    Condominio "1" -- "0..1" Regimento : possui
     Unidade "1" -- "0..*" Morador : vincula
     Morador "1" -- "0..*" Reserva : solicita
     AreaComum "1" -- "0..*" Reserva : recebe
@@ -105,8 +120,8 @@ classDiagram
 | Solicitar reserva | #4 | Implementado |
 | Abrir chamado de manutenção | #5 | Implementado |
 | Consultar regimento pelo assistente | #6 | Implementado; depende de arquivo e chave configurados |
-| Atualizar chamados | #7 | Não implementado |
-| Consultar painel agregado | #8 | Não implementado no backend |
-| Atualizar regimento por PDF | #9 | Não implementado |
-| Consultar histórico | #10 | Não implementado |
+| Gerenciar chamados | #7 | Implementado no código nesta revisão; validação integrada pendente |
+| Consultar painel agregado | #8 | Implementado com `GROUP BY` no PostgreSQL; validação integrada pendente |
+| Atualizar regimento por PDF | #9 | Implementado com extração de texto e persistência no PostgreSQL; validação integrada pendente |
+| Consultar histórico | #10 | Implementado com filtro pelo usuário autenticado; validação integrada pendente |
 | Exportar relatório | #11 | Não implementado no backend |

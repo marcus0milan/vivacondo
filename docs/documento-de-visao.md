@@ -10,7 +10,7 @@
 
 ## 1. Problema
 
-Administradores de condomínios podem tratar reservas de áreas comuns, solicitações de manutenção e dúvidas sobre o regimento por canais separados, como grupos de mensagens, planilhas e atendimento presencial. Esse processo pode gerar conflitos de horário, dificuldade para acompanhar solicitações e respostas inconsistentes às regras internas. O repositório não contém levantamento quantitativo de um condomínio cliente; por isso, o impacto ainda não está medido.
+Administradores de condomínios podem tratar reservas de áreas comuns, solicitações de manutenção e dúvidas sobre o regimento por canais separados, como grupos de mensagens, planilhas e atendimento presencial. Esse processo pode gerar conflitos de horário, dificuldade para acompanhar solicitações e respostas inconsistentes às regras internas. A devolutiva da E1 registra uma estimativa de 10–15 horas semanais dedicadas pelo síndico a essas rotinas. Essa estimativa não veio acompanhada de medição independente ou pesquisa de campo no repositório; portanto, o impacto do sistema não é apresentado como resultado comprovado.
 
 O VivaCondo busca centralizar esses fluxos em uma aplicação web e permitir que síndico e moradores tenham ações apropriadas ao seu perfil.
 
@@ -30,7 +30,7 @@ Na versão entregue nesta disciplina, o sistema integra frontend em HTML, CSS e 
 ## 4. Objetivos do MVP
 
 - Permitir acesso seguro com perfis Morador e Síndico.
-- Impedir reservas com conflito de horário na mesma área e data.
+- Validar reservas e rejeitar conflitos de horário na mesma área e data.
 - Permitir o cadastro e vinculação de unidades e moradores.
 - Permitir que moradores registrem chamados de manutenção.
 - Disponibilizar consulta ao regimento por meio de um assistente virtual.
@@ -48,9 +48,9 @@ Na versão entregue nesta disciplina, o sistema integra frontend em HTML, CSS e 
 | Requisito mínimo | Como o projeto cobre |
 |---|---|
 | Autenticação com 2+ perfis | Perfis MORADOR e SINDICO, com rotas e validações no backend |
-| 6+ entidades com relacionamento N:N | Usuários, condomínio, unidade, morador, síndico, área comum, reserva e chamado; reserva relaciona morador e área comum |
+| 6+ entidades com relacionamento N:N | Usuário, condomínio, unidade, morador, síndico, área comum, reserva, chamado e regimento; reserva relaciona morador e área comum |
 | Regra de negócio não trivial | Validação de CPF, conflito de reserva, limite mensal e permissões por perfil |
-| Consulta agregada (relatório/dashboard) | Parcial: `/api/units` retorna a contagem de moradores por unidade com `COUNT`/`GROUP BY`; o painel da história #8 não foi implementado |
+| Consulta agregada (relatório/dashboard) | O endpoint de síndico `/api/dashboard/calls` agrega chamados por categoria e status com `COUNT`/`GROUP BY`; a validação funcional integrada ainda está pendente |
 | Validações em interface e banco | Validação de campos no frontend/API e constraints, índices e checks no PostgreSQL |
 | Deploy público por URL | [https://vivacondo.onrender.com](https://vivacondo.onrender.com) respondeu HTTP 200 em 23/11/2026; `GET /api/setup` informou banco inicializado |
 | Repositório Git com README | Repositório público no GitHub, com instruções de instalação e execução |
