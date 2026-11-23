@@ -1,5 +1,7 @@
 # Relatório Individual de Contribuição — Sprint 3 
 
+> **Verificação documental:** os números de PR e estados abaixo são autodeclarados; não há links para conferi-los. Além disso, o backend no estado atual não contém o painel integrado descrito nesta contribuição. Confirmar os PRs e a relação deles com a versão final antes de usar este documento como evidência.
+
 **Papel nesta sprint:** Desenvolvedor Full Stack / Facilitador
 
 ## 1. O que fiz

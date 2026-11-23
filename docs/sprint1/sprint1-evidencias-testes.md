@@ -45,7 +45,7 @@ As credenciais e os dados pessoais completos usados nos testes não são reprodu
 - Os dados cadastrados foram consultados novamente pela API, confirmando persistência no PostgreSQL após as operações.
 - A validação foi manual; não foi criado nem executado um conjunto automatizado de testes unitários ou de integração.
 - Capturas de tela: [print1](./media/print1.jfif), [print2](./media/print2.jfif) e [print3](./media/print3.jfif).
-- Gravação da demonstração: [vivacondo - sprint 1.mp4](./media/vivacondo%20-%20sprint%201.mp4).
+- Gravação da demonstração: [vivacondo-sprint1.mp4](./media/vivacondo-sprint1.mp4).
 - Não houve execução em CI.
 
 ## 5. Observações

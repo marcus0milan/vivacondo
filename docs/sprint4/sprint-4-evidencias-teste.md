@@ -1,11 +1,14 @@
 # Evidências de Teste — Sprint 4 — VivaCondo
 
-| ID | Caso de teste | Tipo | Resultado | Evidência |
+| ID | Caso | Tipo | Resultado observado | Evidência |
 |---|---|---|---|---|
-| CT14 | Morador tenta aceder a rota exclusiva de Síndico (aprovação/painel geral) | Integração / Segurança | Passou | Bloqueado com HTTP 403 Forbidden — `tests/security.test.js` |
-| CT15 | Tentativa de injeção SQL / script HTML nos campos de ocorrência e reserva | Segurança | Passou | Queries parametrizadas e sanitização bloquearam a execução — `tests/security.test.js` |
-| CT16 | Exportação de relatório de reservas e ocorrências ativas em formato CSV | Integração | Passou | Gera ficheiro `.csv` com cabeçalhos e contagens corretas — `tests/dashboard.test.js` |
-| CT17 | Fluxo ponta a ponta em produção (Login -> Reserva -> Aprovação -> Painel) | Manual / Aceitação | Passou | Vídeo de evidência `docs/sprint4/media/vivacondo-sprint4.mp4` |
+| CT07 | Reserva sobreposta | Unitário Jest | Passou em 23/11/2026 | `test/vivacondo.test.js`; dados em memória |
+| CT08 | Horário final inválido | Unitário Jest | Passou em 23/11/2026 | `test/vivacondo.test.js`; dados em memória |
+| CT09 | Justificativa de recusa | Unitário Jest | Passou em 23/11/2026 | `test/vivacondo.test.js`; operação não existe na API atual |
+| CT10 | Agrupamento agregado em memória | Unitário Jest | Passou em 23/11/2026 | `test/vivacondo.test.js`; não testa SQL/API |
+| CT15 | Sanitização HTML no módulo legado | Unitário Jest | Passou em 23/11/2026 | `test/vivacondo.test.js`; não testa endpoint real de chamados |
+| CT16 | Geração CSV em memória | Unitário Jest | Passou em 23/11/2026 | `test/vivacondo.test.js`; não há exportação integrada |
 
-## Cobertura automatizada nesta sprint
-Total de 28 testes automatizados passando no CI (100% de sucesso), atingindo 76% de cobertura nos módulos de negócio do sistema.
+## Cobertura automatizada
+
+Seis de seis testes passaram na execução local de 23/11/2026. A cobertura de linhas medida foi 78,4% para `frontend/vivacondo-app.js`. Não há evidência de que estes testes tenham rodado em CI durante a Sprint 4.

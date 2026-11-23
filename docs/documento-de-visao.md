@@ -10,7 +10,7 @@
 
 ## 1. Problema
 
-Administradores de condomínios costumam tratar reservas de áreas comuns, solicitações de manutenção e dúvidas sobre o regimento por canais separados, como grupos de mensagens, planilhas e atendimento presencial. Esse processo pode gerar conflitos de horário, dificuldade para acompanhar solicitações e respostas inconsistentes às regras internas.
+Administradores de condomínios podem tratar reservas de áreas comuns, solicitações de manutenção e dúvidas sobre o regimento por canais separados, como grupos de mensagens, planilhas e atendimento presencial. Esse processo pode gerar conflitos de horário, dificuldade para acompanhar solicitações e respostas inconsistentes às regras internas. O repositório não contém levantamento quantitativo de um condomínio cliente; por isso, o impacto ainda não está medido.
 
 O VivaCondo busca centralizar esses fluxos em uma aplicação web e permitir que síndico e moradores tenham ações apropriadas ao seu perfil.
 
@@ -51,7 +51,7 @@ Na versão entregue nesta disciplina, o sistema integra frontend em HTML, CSS e 
 | Autenticação com 2+ perfis | Perfis MORADOR e SINDICO, com rotas e validações no backend |
 | 6+ entidades com relacionamento N:N | Usuários, condomínio, unidade, morador, síndico, área comum, reserva e chamado; reserva relaciona morador e área comum |
 | Regra de negócio não trivial | Validação de CPF, conflito de reserva, limite mensal e permissões por perfil |
-| Consulta agregada | Estruturas e testes unitários para agrupamento por bloco, ocorrências e reservas |
+| Consulta agregada | Não entregue no backend nesta versão; corresponde à história #8 do backlog |
 | Validações em interface e banco | Validação de campos no frontend/API e constraints, índices e checks no PostgreSQL |
 | Deploy público por URL | Pendente. O README informa que o deploy ainda não foi publicado |
 | Repositório Git com README | Repositório público no GitHub, com instruções de instalação e execução |

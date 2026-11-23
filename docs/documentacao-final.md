@@ -1,67 +1,73 @@
-# Documentação Final Consolidada - VivaCondo
+# Documentação Final — VivaCondo
 
-**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)
+**Repositório:** https://github.com/marcus0milan/vivacondo<br>
+**Deploy definitivo:** não há URL verificável registrada nos arquivos atuais; preencher após confirmar acesso público.<br>
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047) · Felipe Savegnago Pires (RA 2840482421034) · Marcus Vinicius Milan (RA 2840482421001)
 
-**Data:** 13/11/2026
+## 1. Índice de artefatos do semestre
 
-## 1. Escopo avaliado
-
-Este documento consolida o estado final do VivaCondo em relação ao Termo de Aceite e ao backlog.
-
-| História | Estado |
+| Entrega | Artefatos |
 |---|---|
-| #1 Autenticação por perfil | Entregue |
-| #2 Cadastro de unidades e moradores | Entregue |
-| #3 Cadastro de áreas comuns | Entregue |
-| #4 Reserva de áreas comuns | Entregue |
-| #5 Cadastro de chamados | Entregue |
-| #6 Assistente com regimento | Entregue localmente |
-| #7 Gestão de chamados pelo síndico | Não entregue no backend |
-| #8 Painel agregado | Parcial; lógica existente em testes/modelagem, sem endpoint final completo |
-| #9 Upload de PDF do regimento | Não entregue |
-| #10 Histórico detalhado | Não entregue no backend |
-| #11 Exportação CSV | Parcial; lógica unitária isolada, sem integração completa |
+| E1 | [Documento de Visão](documento-de-visao.md) · [Declaração de Escopo Compartilhado](declaracao-escopo-compartilhado.md) |
+| E2 | [Backlog](../backlog/sprint1/e2a.md) · [Termo de Aceite do Projeto](../backlog/sprint1/e2b.md) |
+| E3 | [UML](modelagem/e3a.md) · [DER](modelagem/e3b.md) · [DDL/schema usado pela API](../backend/VivaCondo.Api/database/schema.sql) |
+| E4 | [README](../README.md) · [Roteiro do Protótipo](prototipo.md) · [Plano de Testes](plano-de-testes.md) |
+| E5 | [Sprint 1](sprint1/sprint1-relatório-de-entrega.md) · [Retrospectiva](sprint1/sprint1-ata-de-retrospectiva.md) · [Evidências](sprint1/sprint1-evidencias-testes.md) · [Contribuição](sprint1/sprint1-contirbuicao.md) |
+| E6 | [Sprint 2](<sprint2/sprint2-relatório de entrega.md>) · [Retrospectiva](<sprint2/sprint2-ata de retrospectiva.md>) · [Evidências](<sprint2/sprint2-evidencias teste.md>) · [Contribuição](sprint2/sprint2-contribuicao.md) |
+| E7 | [Sprint 3](sprint3/sprint-3-relatorio.md) · [Retrospectiva](sprint3/sprint-3-retrospectiva.md) · [Evidências](sprint3/sprint-3-evidencias-teste.md) · [Contribuição](sprint3/sprint-3-contribuicao.md) |
+| E8 | [Sprint 4](sprint4/sprint-4-relatorio.md) · [Retrospectiva](sprint4/sprint-4-retrospectiva.md) · [Evidências](sprint4/sprint-4-evidencias-teste.md) · [Contribuição](sprint4/sprint-4-contribuicao.md) |
+| E9 | [Relatório de Testes](relatorio-testes-final.md) · [Termo de Aceite do Cliente](termo-aceite-cliente.md) |
+| E10 | Este documento · [Manual do Usuário](manual-do-usuario.md) · [Roteiro de Apresentação](roteiro-apresentacao.md) |
+| Complementar | [Mostra Virtual](mostra-virtual.md) · [Roteiro complementar de vídeo](roteiro-video-mostra.md) |
 
-## 2. Desvios do escopo original
+## 2. Desvios do escopo (E2)
 
-- Não há deploy público ativo. O README declara que o sistema ainda não está publicado.
-- A consulta do assistente usa arquivo de texto local no ambiente atual, não upload de PDF.
-- A implementação final não inclui todas as histórias #7 a #11 no backend.
-- Os testes unitários existentes cobrem regras em JavaScript, mas não substituem testes completos da API C#.
-- Não há evidência de workflow de CI configurado no repositório.
+| História | Situação observada no backend | Observação |
+|---:|---|---|
+| #1 Autenticação por perfil | Implementada | Login, token e autorização por perfil |
+| #2 Unidades e moradores | Implementada | Cadastro com vínculo de unidade e validações |
+| #3 Áreas comuns | Implementada | Cadastro e listagem |
+| #4 Reservas | Implementada | Regras no endpoint; teste integrado ainda precisa de evidência |
+| #5 Chamados | Implementada | Abertura por morador |
+| #6 Assistente do regimento | Implementada com configuração | Requer arquivo de texto e chave OpenAI |
+| #7 Gestão de chamados | Não implementada | Sem endpoint no backend |
+| #8 Painel agregado | Não implementado | Sem endpoint/tela integrados no backend |
+| #9 Upload de PDF | Não implementado | Regimento configurado por arquivo de texto |
+| #10 Histórico | Não implementado | Sem consulta de histórico no backend |
+| #11 Exportação CSV | Não implementada | Teste isolado não constitui exportação integrada |
+| #12 Boletos/PIX | Fora de escopo | Prioridade Won't |
 
-## 3. Arquitetura final
+O repositório não contém registro verificável de renegociação formal das histórias não entregues. A justificativa e a aprovação de eventual redução de escopo devem ser confirmadas com o professor.
 
-- Frontend: HTML, CSS e JavaScript.
-- Backend: ASP.NET Core com C#.
-- Banco: PostgreSQL.
-- Assistente: API da OpenAI com contexto carregado de arquivo local.
-- Persistência de usuários, unidades, áreas comuns, reservas e chamados no PostgreSQL.
+## 3. Deploy e aceite
 
-## 4. Rastreabilidade
+Não foi fornecida uma URL que permita confirmar a publicação. O README descreve execução local; portanto, esta documentação não declara o deploy público como concluído. O Termo de Aceite do Cliente permanece sem parecer e assinatura.
 
-| Artefato | Local |
-|---|---|
-| Documento de Visão | [documento-de-visao.md](./documento-de-visao.md) |
-| Backlog | [../backlog/sprint1/e2a.md](../backlog/sprint1/e2a.md) |
-| UML | [modelagem/e3a.md](./modelagem/e3a.md) |
-| DER | [modelagem/e3b.md](./modelagem/e3b.md) |
-| DDL | [modelagem/e3c.md](./modelagem/e3c.md) |
-| Plano de testes | [plano-de-testes.md](./plano-de-testes.md) |
-| Testes finais | [relatorio-testes-final.md](./relatorio-testes-final.md) |
-| Termo de Aceite | [termo-aceite-cliente.md](./termo-aceite-cliente.md) |
-| Sprints | [sprint1](./sprint1), [sprint2](./sprint2), [sprint3](./sprint3), [sprint4](./sprint4) |
+## 4. Arquitetura final
 
-## 5. Como executar
+- Frontend estático em HTML, CSS e JavaScript.
+- API ASP.NET Core .NET 8.
+- PostgreSQL acessado com Npgsql.
+- Assistente opcional via OpenAI, lendo trechos de arquivo de texto configurado no servidor.
 
-Consultar a seção "Como rodar localmente" no README. A execução precisa de .NET 8 SDK e PostgreSQL 15 ou superior.
+O schema real contém oito tabelas: `condominio`, `usuario`, `unidade`, `sindico`, `morador`, `area_comum`, `reserva` e `chamado`. O regimento não é uma tabela.
 
-## 6. Próximos passos
+## 5. Rastreabilidade requisito → código → teste
 
-- Publicar o sistema em ambiente acessível por URL.
-- Finalizar endpoints do síndico para gestão de chamados e painel.
-- Integrar exportação CSV à API.
-- Implementar upload seguro de PDF do regimento.
-- Criar testes automatizados para endpoints C#.
-- Configurar CI para build e testes.
-- Recolher aceite formal do cliente/avaliador.
+| História | Código/API | Teste/evidência |
+|---:|---|---|
+| #1 | `/api/auth/login`, `/api/me`, autorização por perfil | Evidências manuais da Sprint 1 |
+| #2 | `/api/units`, `/api/residents` | Evidências manuais da Sprint 1 |
+| #3 | `/api/areas` | Evidências manuais da Sprint 1 |
+| #4 | `/api/reservations` | T15–T18 pendentes de validação integrada; CT07/CT08 são unitários isolados |
+| #5 | `/api/calls` | T19/T20 pendentes de validação integrada |
+| #6 | `/api/assistant/questions` | T21/T22 pendentes com ambiente de IA configurado |
+| #7–#11 | Sem implementação integrada | Não considerar CT09/CT10/CT16 evidência dos endpoints ausentes |
+
+## 6. Como executar
+
+Consultar [README.md](../README.md) para pré-requisitos, variáveis de ambiente, criação do banco e comandos de build/teste.
+
+## 7. Observação sobre registros históricos
+
+Os relatórios individuais das Sprints 3 e 4 citam PRs sem links verificáveis e descrevem entregas que não aparecem no backend atual. Os relatos de deploy e testes CT14–CT18 também não têm URL ou logs associados. Esses itens estão identificados nos respectivos documentos como autodeclarados e pendentes de confirmação; não são usados aqui como prova de implementação.

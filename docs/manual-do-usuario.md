@@ -2,6 +2,8 @@
 
 **Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)
 
+**Ambiente documentado:** execução local. Capturas reais do sistema publicado não foram fornecidas; este manual não afirma que o deploy público está ativo.
+
 ## 1. Introdução
 
 O VivaCondo ajuda moradores e síndicos a organizar reservas de áreas comuns, chamados de manutenção e consultas ao regimento.

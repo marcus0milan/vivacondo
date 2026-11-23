@@ -1,24 +1,24 @@
-# Relatório Individual de Contribuição — Sprint 2
+# Contribuição da Equipe — Sprint 2
 
-**Papel nesta sprint:** Desenvolvedor Full Stack / Facilitador
+Este resumo relaciona frentes de trabalho às responsabilidades definidas no Termo E2b. Não substitui os relatórios individuais exigidos pelo modelo; os documentos atuais não incluem links verificáveis para commits, pull requests ou tarefas por integrante.
 
-## 1. O que fiz
-| Item | PR/commit | Status |
-|---|---|---|
-| Implementação da regra de negócio de validação e bloqueio de conflito de reservas | PR #11 | Mergeado |
-| Integração do frontend de reservas e listagem de áreas comuns | PR #12 | Mergeado |
-| Documentação do relatório, evidências de teste e ata da Sprint 2 | branch `feature/docs-sprint-2` | Mergeado |
+## Guilherme Rastelli Fernandes — Product Owner / IA e Backend
 
-## 2. Rituais que participei
-- [x] Dailies/weeklies
-- [x] Sprint Review
-- [x] Retrospectiva
+- Definição da regra de duas reservas ativas por unidade/mês.
+- Definição do arquivo inicial de regimento para o assistente.
+- Validação funcional do assistente permanece pendente nas evidências.
 
-## 3. PRs de colegas que revisei
-| PR | Autor | Comentário resumido |
-|---|---|---|
-| PR #10 (Listagem de áreas comuns) | Marcus milan | Verifiquei os filtros de status ativo e aprovei o merge |
-| PR #13 (Testes de reserva) | Felipe Savegnago Pires | Sugeri adicionar caso de teste para tentativa de reserva no mesmo horário exato |
+## Felipe Savegnago Pires — Backend e Banco de Dados
 
-## 4. Dificuldades e o que aprendi
-Garantir que a validação de sobreposição de horários funcionasse tanto na lógica da aplicação como na constraint do banco de dados exigiu cuidado com os formatos ISO de data/hora. Aprendi a isolar a função de validação de conflitos para facilitar os testes unitários.
+- Implementação da solicitação de reservas.
+- Validações de sobreposição, limite mensal e horário limite.
+- Testes integrados com PostgreSQL permanecem sem registro de execução.
+
+## Marcus Vinicius Milan — Frontend e Qualidade
+
+- Fluxo de abertura de chamados no frontend.
+- Validação funcional de chamado permanece pendente nas evidências.
+
+## Registro
+
+As frentes acima são um resumo por papel; confirmar e anexar a contribuição individual e as referências reais de PR/commit antes da entrega final.

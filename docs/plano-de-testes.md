@@ -1,82 +1,66 @@
-# Plano de Testes - VivaCondo
+# Plano de Testes — VivaCondo
 
-**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047) · Felipe Savegnago Pires (RA 2840482421034) · Marcus Vinicius Milan (RA 2840482421001)<br>
+**Versão:** 2.0
 
-**Versão:** 1.0
+## 1. Estratégia
 
-**Data:** 13/11/2026
+| Tipo de teste | O que cobre | Ferramenta | Quando roda |
+|---|---|---|---|
+| Build | Compilação da API .NET | `dotnet build` | A cada PR que altera o backend |
+| Unitário | Regras isoladas do módulo JavaScript legado; não representa chamadas ao backend/API | Jest | A cada PR e antes do fechamento da sprint |
+| Funcional/manual | Fluxos reais da interface, API e PostgreSQL | Navegador, API e banco de desenvolvimento | A cada Sprint Review e após mudanças no backend |
+| Assistente | Consulta com regimento de teste e resposta fora do contexto | API, arquivo local e chave OpenAI de teste | Quando o ambiente estiver configurado |
+| Aceitação | Comparação do incremento com o escopo do Termo E2b | Avaliador/cliente | Fechamento E9 |
 
-## 1. Objetivo
+## 2. Critério de bloqueio de merge
 
-Definir os testes necessários para verificar o MVP do VivaCondo e registrar o comportamento esperado das funcionalidades implementadas.
+Não aceitar PR se:
 
-## 2. Escopo
+- `dotnet build backend/VivaCondo.Api/VivaCondo.Api.csproj --configuration Release` falhar;
+- `npm test` falhar;
+- faltar revisão de ao menos um integrante.
 
-Serão testados:
+O workflow [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) executa o build e os testes unitários em pushes para `main` e pull requests direcionadas a `main`. Os testes unitários não substituem os testes funcionais da API.
 
-- Autenticação de Morador e Síndico.
-- Cadastro de unidades e moradores.
-- Cadastro de áreas comuns.
-- Solicitação e conflito de reservas.
-- Abertura de chamados.
-- Consulta ao regimento pelo assistente.
-- Regras administrativas e permissões por perfil.
+## 3. Casos de teste funcionais planejados
 
-Não integram o escopo desta versão:
+Os cenários T1–T14 e seus resultados manuais estão em [Evidências da Sprint 1](sprint1/sprint1-evidencias-testes.md). Os cenários abaixo ainda precisam de execução registrada; não são considerados aprovados.
 
-- Cobrança financeira.
-- Emissão de PIX ou boletos.
-- Upload de PDF do regimento.
-- Implantação pública permanente.
+| ID | História | Cenário | Resultado esperado | Situação |
+|---|---:|---|---|---|
+| T15 | #4 | Solicitar reserva em horário livre e futuro | Reserva criada como `PENDENTE` | Pendente de execução com PostgreSQL |
+| T16 | #4 | Criar reserva sobreposta na mesma área/data | Requisição recusada; não cria segunda reserva | Pendente de execução com PostgreSQL |
+| T17 | #4 | Ultrapassar limite de duas reservas ativas na unidade/mês | Requisição recusada | Pendente de execução com PostgreSQL |
+| T18 | #4 | Solicitar reserva após o horário limite da área | Requisição recusada | Pendente de execução com PostgreSQL |
+| T19 | #5 | Abrir chamado com dados válidos | Chamado salvo com status `ABERTO` | Pendente de execução com PostgreSQL |
+| T20 | #5 | Abrir chamado com campo obrigatório vazio | Requisição recusada | Pendente de execução com PostgreSQL |
+| T21 | #6 | Perguntar sobre regra presente no regimento | Resposta baseada no texto enviado à IA | Pendente; requer arquivo e chave |
+| T22 | #6 | Perguntar sobre conteúdo ausente do regimento | Mensagem de informação não encontrada | Pendente de execução |
+| T23 | #1 | Usuário tentar acessar operação exclusiva do outro perfil | Acesso negado | Verificar em execução integrada |
+| T24 | #6 | Iniciar assistente sem `REGIMENTO_PATH` | Resposta 503 informativa | Pendente de execução |
 
-## 3. Estratégia
+## 4. Casos automatizados no repositório
 
-Os testes são divididos em:
+| ID | Cenário | Tipo | Limitação |
+|---|---|---|---|
+| CT07 | Bloqueio de reserva sobreposta | Unitário Jest | Exercita a lógica isolada, não o endpoint C# |
+| CT08 | Hora final menor ou igual à inicial | Unitário Jest | Exercita a lógica isolada |
+| CT09 | Justificativa ao recusar reserva | Unitário Jest | A operação de recusa não existe na API atual |
+| CT10 | Agrupamento por bloco | Unitário Jest | Não comprova consulta agregada no PostgreSQL |
+| CT15 | Sanitização HTML | Unitário Jest | O modelo de ocorrência do teste não corresponde ao endpoint de chamados em produção |
+| CT16 | Geração de CSV | Unitário Jest | Não comprova endpoint/exportação integrada |
 
-- Unitários para regras de negócio no frontend com Jest.
-- Integração manual da API ASP.NET Core com PostgreSQL.
-- Testes funcionais pela interface web.
-- Testes de banco com CPF, unicidade e relacionamentos.
+## 5. Ambiente e reprodução
 
-## 4. Ambiente
+- .NET 8 SDK e PostgreSQL 15+ para API/build.
+- Node.js 20+ e npm para Jest.
+- API: `dotnet run --project backend/VivaCondo.Api/VivaCondo.Api.csproj`.
+- Testes: `npm ci` e `npm test`.
+- O assistente requer `OPENAI_API_KEY` e `REGIMENTO_PATH`.
 
-- Windows, macOS ou Linux.
-- .NET 8 SDK.
-- PostgreSQL 15 ou superior.
-- Navegador moderno.
-- OpenAI configurada apenas para testes do assistente.
+## 6. Critério de saída da bateria final
 
-## 5. Casos de teste
-
-| ID | História | Pré-condições | Procedimento | Resultado esperado |
-|---|---|---|---|---|
-| CT01 | #1 | Usuários cadastrados | Autenticar Morador e Síndico | Cada perfil recebe acesso às suas funções |
-| CT02 | #1 | Usuário válido | Informar senha incorreta | Acesso negado |
-| CT03 | #2 | Síndico autenticado | Cadastrar unidade duplicada | Cadastro recusado |
-| CT04 | #2 | Morador | Informar CPF inválido | Cadastro recusado |
-| CT05 | #3 | Síndico autenticado | Cadastrar área sem campos obrigatórios | Cadastro recusado |
-| CT06 | #3 | Área cadastrada | Cadastrar área com mesmo nome no mesmo condomínio | Cadastro recusado |
-| CT07 | #4 | Área já reservada | Criar reserva sobreposta | Reserva bloqueada |
-| CT08 | #4 | Dados válidos | Informar hora fim menor ou igual ao início | Reserva recusada |
-| CT09 | #7 | Reserva pendente | Recusar sem justificativa | Recusa bloqueada |
-| CT10 | #8 | Chamados e reservas cadastrados | Solicitar relatório agregado | Dados agrupados por bloco |
-| CT11 | #5 | Morador autenticado | Abrir chamado obrigatório | Chamado criado com status ABERTO |
-| CT12 | #6 | Regimento configurado localmente | Fazer pergunta existente no documento | Resposta baseada no regimento |
-| CT13 | #6 | Regimento configurado localmente | Fazer pergunta fora do conteúdo | Mensagem padrão de informação não encontrada |
-| CT14 | Acesso | Usuário Morador autenticado | Tentar operação administrativa | Operação negada |
-| CT15 | Segurança | Título com tag HTML | Criar ocorrência | HTML perigoso removido |
-| CT16 | #11 | Dados agregados disponíveis | Exportar CSV | Arquivo contém cabeçalhos e dados válidos |
-
-## 6. Critérios de entrada
-
-- API compilando.
-- PostgreSQL disponível.
-- Banco criado.
-- Dados mínimos de condomínio, usuário e área cadastrados.
-
-## 7. Critérios de saída
-
-- Casos críticos CT01 a CT14 executados.
-- Nenhuma falha crítica aberta.
-- Evidências registradas no relatório final.
-- Desvios documentados.
+- Executar e registrar resultados reais para os cenários incluídos no escopo.
+- Registrar falhas e correções sem substituir resultado inicial.
+- Anexar evidência verificável e obter o parecer/assinatura do cliente ou avaliador.

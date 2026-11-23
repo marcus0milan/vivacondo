@@ -1,30 +1,33 @@
 # Relatório de Testes Executados — VivaCondo
 
-**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
-**Data do relatório:** 14/11/2026
-**Escopo testado:** Histórias #1 a #6 implementadas no sistema (API .NET + PostgreSQL + Frontend) e bateria de 6 testes unitários automatizados.
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)<br>
+**Data desta verificação local:** 23/11/2026<br>
+**Escopo:** histórias #1–#6 do MVP, conforme backlog; histórias adicionais ainda não implementadas não são declaradas aprovadas.
 
-## 1. Resumo executivo
-| Métrica | Valor real no repositório |
+## 1. Resumo da evidência disponível
+
+| Verificação | Estado registrado |
 |---|---|
-| Total de casos de teste automatizados implementados | 6 (`CT07`, `CT08`, `CT09`, `CT10`, `CT15`, `CT16`) |
-| Passaram | 6 (100% dos testes implementados) |
-| Falharam | 0 |
-| Cobertura automatizada (linhas) | ~74% no módulo testado (execução local; sem CI configurado) |
+| Testes unitários Jest | 6/6 passaram em `npm run test:coverage`; arquivo `test/vivacondo.test.js` |
+| Cobertura de linhas | 78,4% de `frontend/vivacondo-app.js`; são regras isoladas, não cobertura da API |
+| Testes manuais da Sprint 1 | 14 cenários registrados em `docs/sprint1/sprint1-evidencias-testes.md` |
+| Testes funcionais da Sprint 2 | Pendentes conforme `docs/sprint2/sprint2-evidencias teste.md` |
+| Build da API .NET | Evidência histórica de build sem erros na Sprint 1; não foi possível repetir nesta verificação porque o .NET SDK não está instalado neste ambiente |
+| Integração/aceitação com cliente | Não há aceite assinado no repositório |
+| CI | Workflow adicionado em `.github/workflows/ci.yml`; ainda não há execução remota registrada |
 
-## 2. Casos de teste automatizados — visão consolidada
-| ID | Cenário testado | Tipo | Resultado | Arquivo |
-|---|---|---|---|---|
-| CT07 | Bloqueio de reserva duplicada/sobreposta na mesma área e data | Unitário | Passou | `tests/vivacondo.test.js` |
-| CT08 | Rejeição de reserva com hora de término menor ou igual à hora de início | Unitário | Passou | `tests/vivacondo.test.js` |
-| CT09 | Exigência de justificativa obrigatória ao recusar uma reserva | Unitário | Passou | `tests/vivacondo.test.js` |
-| CT10 | Agrupamento correto de ocorrências e reservas por bloco | Unitário | Passou | `tests/vivacondo.test.js` |
-| CT15 | Sanitização de tags HTML contra XSS básico na criação de ocorrência | Unitário | Passou | `tests/vivacondo.test.js` |
-| CT16 | Exportação de dados agregados em formato CSV válido | Unitário | Passou | `tests/vivacondo.test.js` |
+## 2. Limites dos testes automatizados
 
-## 3. Estado real de implementação (Backend/Frontend vs. Testes)
-- **Implementado de ponta a ponta (Frontend + API `Program.cs` + PostgreSQL):** Histórias #1 a #6 (Autenticação, cadastros base, áreas comuns e criação de reservas com validação de conflito).
-- **Não implementado no `Program.cs` (Backend):** Histórias #7 (aprovação/recusa pelo síndico na API), #8 (endpoint SQL de consulta agregada), #9 (alertas de vencimento na API), #10 (histórico detalhado de ocorrências na API) e #11 (exportação CSV via API). Os testes `CT09`, `CT10`, `CT15` e `CT16` validam apenas a lógica unitária isolada em JavaScript, não endpoints do backend C#.
+Os testes Jest chamam funções de `frontend/vivacondo-app.js`, que opera com armazenamento em memória/localStorage. Eles não testam os endpoints C# nem o PostgreSQL. Os casos CT09, CT10, CT15 e CT16 não comprovam, respectivamente, operação de recusa, consulta agregada, chamados reais ou exportação integrada.
 
-## 4. Testes de aceitação com cliente/PO
-A validação de aceitação presencial e o preenchimento do parecer oficial serão realizados diretamente pelo professor avaliador na apresentação do projeto, utilizando o modelo em branco em `docs/termo-aceite-cliente.md`.
+Na primeira execução, CT07 falhou porque usava uma data fixa já passada. O caso foi ajustado para criar uma reserva em data futura e, em seguida, testar a sobreposição. Na execução seguinte, os seis testes passaram.
+
+## 3. Testes manuais e defeitos
+
+Os resultados T1–T14 estão no [relatório de evidências da Sprint 1](sprint1/sprint1-evidencias-testes.md). Os cenários T15–T24 estão definidos no [Plano de Testes](plano-de-testes.md), mas permanecem pendentes até que sejam executados e acompanhados de evidência.
+
+Não há registro confiável no repositório de uma bateria final completa, de bugs dessa bateria e de sua resolução. Esses campos devem ser preenchidos após a execução, sem estimar cobertura ou aprovações.
+
+## 4. Aceitação com cliente/PO
+
+Não foi localizado registro de sessão de aceite concluída. O [Termo de Aceite do Cliente](termo-aceite-cliente.md) permanece para preenchimento pelo avaliador/cliente, com data, parecer e assinatura.

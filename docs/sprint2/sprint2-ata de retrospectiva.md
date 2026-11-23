@@ -1,23 +1,28 @@
-# Ata de Retrospectiva — Sprint 2 — VivaCondo
+# Retrospectiva — Sprint 2 — VivaCondo
 
-**Data:** Registro consolidado da Sprint 2
-**Presentes:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
+**Data registrada:** 03/10/2026<br>
+**Presentes registrados:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)
 
-## 1. Ações da retrospectiva anterior — foram aplicadas?
-| Ação decidida | Aplicada? | Evidência/comentário |
+## 1. Ações da retrospectiva anterior
+
+| Ação | Situação registrada | Evidência |
 |---|---|---|
-| Integrar frontend com os endpoints da API e banco PostgreSQL | Sim | Fluxo das histórias #1 a #6 integrado em `Program.cs` e `frontend/` |
+| Definir limite mensal de reservas | Aplicada no código e backlog | Duas reservas ativas por unidade/mês; pendentes e confirmadas contam |
+| Implementar reservas | Implementada; teste funcional pendente | API valida conflito, limite e horário da área |
+| Implementar abertura de chamados | Implementada; teste funcional pendente | Endpoint cria chamado com status `ABERTO` |
+| Configurar regimento e validar assistente | Implementação disponível; teste externo pendente | Requer arquivo de texto e chave da OpenAI |
 
 ## 2. O que funcionou bem
-- O backend em .NET + PostgreSQL construído para as histórias #1 a #6 ficou funcional e integrado com o frontend.
-- A validação de conflito de reservas foi testada e validada.
 
-## 3. O que não funcionou
-- A história #7 não conseguiu ser finalizada no `Program.cs` dentro do prazo da sprint.
-- A documentação das entregas acumulou para o fechamento na branch `feature/docs-sprint-2`.
+- As histórias #4, #5 e #6 têm interface e endpoints no código.
+- Foi registrada a regra de limite mensal para reduzir ambiguidade.
 
-## 4. Ações para a próxima sprint
-| Ação | Responsável |
-|---|---|
-| Consolidar toda a documentação pendente do repositório com transparência sobre o escopo entregue (#1 a #6) | Guilherme Rastelli Fernandes |
-| Manter a estabilidade da API e do banco de dados para a demonstração das funcionalidades prontas | Felipe Savegnago Pires e Marcus Vinicius Milan |
+## 3. O que precisa melhorar
+
+- Executar e registrar testes funcionais com PostgreSQL.
+- Validar o assistente com arquivo de regimento e chave de teste.
+- Manter os relatórios de sprint vinculados aos caminhos reais do repositório.
+
+## 4. Fechamento
+
+O build da API foi registrado como aprovado no relatório da sprint. Os testes funcionais das histórias #4–#6 não foram registrados como executados. Consulte [evidências da Sprint 2](sprint2-evidencias%20teste.md).

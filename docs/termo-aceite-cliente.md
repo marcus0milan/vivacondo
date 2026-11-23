@@ -1,33 +1,40 @@
 # Termo de Aceite do Cliente — VivaCondo
 
-**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
-**Cliente/PO (Avaliador):** _________________________________________________
-**Data da avaliação:** ___/___/2026
+**Cliente/avaliador:** A preencher pelo professor ou cliente responsável<br>
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047) · Felipe Savegnago Pires (RA 2840482421034) · Marcus Vinicius Milan (RA 2840482421001)<br>
+**Data da avaliação:** ___/___/____
 
-## 1. Escopo avaliado (comparado ao Termo de Aceite do Projeto — E2b)
-*(Preenchimento da coluna "Entregue no código" pela equipe com o estado real do repositório; coluna "Observação do cliente/avaliador" reservada exclusivamente ao professor)*
+## 1. Escopo avaliado
 
-| Funcionalidade prevista na E2b | Entregue no sistema (API + Banco)? | Observação do cliente / avaliador (uso exclusivo do professor) |
-|---|---|---|
-| #1 a #4 — Autenticação e cadastros base (Unidades, Moradores, Áreas Comuns) | Sim (`Program.cs` + PostgreSQL + Frontend) | |
-| #5 — Visualização de áreas comuns disponíveis | Sim (`Program.cs` + PostgreSQL + Frontend) | |
-| #6 — Reserva de área comum com bloqueio de conflito de horário | Sim (`Program.cs` + PostgreSQL + Frontend) | |
-| #7 — Aprovação/recusa de reserva pelo síndico | Não entregue no backend | |
-| #8 — Painel do síndico com consulta agregada | Não entregue no backend | |
-| #9 — Registro de ocorrências e alertas de vencimento | Não entregue no backend | |
-| #10 — Acompanhamento de status pelo morador | Parcial (apenas escopo #1 a #6) | |
-| #11 — Exportação de relatório em CSV (Could) | Não entregue no backend | |
+Comparar com o [Termo de Aceite do Projeto (E2b)](../backlog/sprint1/e2b.md). As observações do avaliador e o parecer devem ser preenchidos durante a avaliação.
 
-## 2. Ressalvas / pendências apontadas na avaliação
-*(Espaço reservado para preenchimento pelo professor/cliente durante a validação)*
-- _________________________________________________________________________
-- _________________________________________________________________________
-- _________________________________________________________________________
+| História | Funcionalidade | Estado observado no código | Observação do cliente/avaliador |
+|---:|---|---|---|
+| #1 | Autenticação por perfil | Implementada | |
+| #2 | Cadastro de unidades e moradores | Implementada | |
+| #3 | Cadastro de áreas comuns | Implementada | |
+| #4 | Reserva com validações de conflito, limite e horário | Implementada; teste integrado pendente de evidência | |
+| #5 | Abertura de chamado | Implementada; teste integrado pendente de evidência | |
+| #6 | Consulta ao regimento por assistente | Implementada no código; depende de arquivo e chave configurados | |
+| #7 | Gestão de chamados pelo síndico | Não implementada no backend | |
+| #8 | Painel com consulta agregada | Não implementado no backend | |
+| #9 | Upload de regimento em PDF | Não implementado | |
+| #10 | Histórico de reservas e chamados | Não implementado no backend | |
+| #11 | Exportação de relatório CSV | Não implementada no backend | |
+| #12 | Boletos e PIX | Fora do escopo (Won't) | |
+| — | Deploy público | Não há URL confirmada neste documento | |
 
-## 3. Parecer do Cliente / Avaliador
-[ ] Aceito sem ressalvas
-[ ] Aceito com ressalvas (listadas acima)
-[ ] Não aceito — motivo: ____________________________________________________
+## 2. Ressalvas e pendências
+
+- A coluna do avaliador deve ser preenchida pela pessoa que realizou a avaliação.
+- A URL de produção e os testes executados devem ser apresentados antes de registrar aceite.
+
+## 3. Parecer
+
+- [ ] Aceito sem ressalvas
+- [ ] Aceito com ressalvas (registradas acima)
+- [ ] Não aceito — motivo: ______________________________________________
 
 ## 4. Assinatura
-- Cliente/PO (Professor): _______________________________________ Data: ___/___/2026
+
+- Cliente/avaliador: ______________________________ Data: ___/___/____

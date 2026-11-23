@@ -1,11 +1,13 @@
-# Evidências de Teste — Sprint 4 — VivaCondo
+# Evidências de Teste — Sprint 3 — VivaCondo
 
-**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
+**Escopo:** histórias #7–#10.
 
-| ID | Caso de teste | Tipo | Resultado | Evidência |
-|---|---|---|---|---|
-| CT15 | Sanitização de tags HTML contra XSS básico | Unitário | Passou | `tests/vivacondo.test.js` |
-| CT16 | Geração de estrutura CSV a partir de dados agregados | Unitário | Passou | `tests/vivacondo.test.js` |
+| História | Cenário | Tipo | Resultado | Evidência |
+|---:|---|---|---|---|
+| #7 | Síndico atualiza status/observações do chamado | Funcional | Não executado | Endpoint não implementado |
+| #8 | Painel agrega chamados por categoria/status | Integração | Não executado | Endpoint integrado não implementado |
+| #9 | Síndico envia PDF do regimento | Funcional | Não executado | Upload não implementado |
+| #10 | Morador consulta histórico | Funcional | Não executado | Endpoint de histórico não implementado |
+| #8 | Agrupamento por bloco no módulo legado | Unitário Jest CT10 | Passou na execução local de 23/11/2026 | `test/vivacondo.test.js`; dados em memória, não valida banco/API |
 
-## Cobertura automatizada nesta sprint
-Total consolidado no repositório: **6 testes automatizados** (`CT07`, `CT08`, `CT09`, `CT10`, `CT15`, `CT16`), todos passando localmente com cerca de **74% de cobertura de linhas** no módulo testado.
+Não há evidência de execução integrada para as histórias desta sprint. O teste CT10 não deve ser apresentado como prova de que o painel do produto foi entregue.

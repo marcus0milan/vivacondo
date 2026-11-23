@@ -1,29 +1,34 @@
-# Relatório de Entrega — Sprint 4 — VivaCondo
+# Relatório de Entrega — Sprint 3 — VivaCondo
 
-**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
-**Período:** Sprint 4
+**Período previsto no cronograma:** 03/10/2026 a 16/10/2026<br>
+**Sprint Review:** data e participantes não confirmados nos registros disponíveis
 
 ## 1. Planejado vs. entregue
-| História (E2) | Planejada para esta sprint? | Entregue? | Observação |
+
+| História (E2) | Planejada? | Entregue no backend? | Observação |
 |---|---|---|---|
-| #11 Exportação do relatório do painel em CSV | Sim (Could) | Não (apenas lógica unitária isolada) | Não integrada ao `Program.cs` |
-| Consolidação dos testes unitários e documentação das Sprints | Sim | Sim | Entregue nos commits de fechamento na branch `feature/docs-sprint-2` |
+| #7 Gestão de chamados pelo síndico | Sim | Não | Não há endpoint correspondente em `Program.cs` |
+| #8 Painel agregado de chamados | Sim | Não | Não há endpoint integrado nem tela correspondente |
+| #9 Upload de PDF do regimento | Sim | Não | O assistente lê arquivo de texto por caminho configurado |
+| #10 Histórico de reservas/chamados | Sim | Não | Não há endpoints de histórico |
 
 ## 2. Incremento funcional demonstrável
-Sistema funcional cobrindo as histórias #1 a #6 integradas entre Frontend, API C# (`Program.cs`) e banco de dados PostgreSQL. As histórias #7 a #11 não foram implementadas no backend e estão declaradas como desvio de escopo na documentação final.
+
+Não foi localizado incremento integrado do escopo #7–#10 no backend atual. Não há URL pública ou gravação de demonstração desta sprint confirmada nos arquivos.
 
 ## 3. Backlog atualizado
-- **Entregues (fim a fim com API e PostgreSQL):** Histórias #1 a #6.
-- **Não entregues no backend:** Histórias #7, #8, #9, #10 e #11.
+
+O estado observado está na tabela de atualização do [backlog](../../backlog/sprint1/e2a.md). Não foi localizado link/captura do board.
 
 ## 4. Evidências de teste
-6 testes unitários reais implementados e passando localmente (`CT07`, `CT08`, `CT09`, `CT10`, `CT15`, `CT16`). Detalhes em `docs/sprints/sprint-4-evidencias-teste.md`.
+
+CT10 existe no módulo JavaScript legado e valida agrupamento em memória; não comprova consulta agregada no PostgreSQL. Os demais cenários das histórias #7–#10 não têm evidência integrada no repositório.
 
 ## 5. Retrospectiva e contribuição
-- Ata de retrospectiva: `docs/sprints/sprint-4-retrospectiva.md`
-- Relatórios individuais de contribuição:
-  - `docs/sprints/sprint-4-contribuicao.md`
 
+- [Registro de retrospectiva da Sprint 3](sprint-3-retrospectiva.md) precisa ser completado com ata e data reais.
+- [Registro de contribuição](sprint-3-contribuicao.md) inclui referências autodeclaradas a PRs; validar os links e a relação com o código final.
 
-## 6. Riscos/impedimentos para a bateria final (E9)
-Apresentar o MVP com foco nas histórias #1 a #6 que funcionam de ponta a ponta no PostgreSQL e submeter o Termo de Aceite do Cliente em branco para avaliação e assinatura presencial do professor.
+## 6. Pendências
+
+Confirmar a reunião de review, os participantes, o board e o motivo real do não atendimento das histórias antes de apresentar este relatório como registro completo.

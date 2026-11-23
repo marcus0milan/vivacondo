@@ -21,6 +21,7 @@ Este índice reúne os documentos produzidos para acompanhar o Projeto VivaCondo
 ## E4 — Repositório e plano de testes
 
 - [Instruções de instalação](../README.md)
+- [Roteiro do protótipo navegável](prototipo.md)
 - [Plano de Testes](plano-de-testes.md)
 
 ## E5–E8 — Sprints
@@ -40,3 +41,5 @@ Este índice reúne os documentos produzidos para acompanhar o Projeto VivaCondo
 - [Documentação Final](documentacao-final.md)
 - [Manual do Usuário](manual-do-usuario.md)
 - [Roteiro de Apresentação](roteiro-apresentacao.md)
+- [Mostra Virtual](mostra-virtual.md)
+- [Roteiro complementar de vídeo](roteiro-video-mostra.md)
