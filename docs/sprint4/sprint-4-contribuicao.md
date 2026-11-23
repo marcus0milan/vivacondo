@@ -1,6 +1,6 @@
 # Relatório Individual de Contribuição — Sprint 4 
 
-> **Verificação documental:** os números de PR e estados abaixo são autodeclarados; não há links para conferi-los. O repositório atual não contém exportação CSV integrada nem URL de deploy verificável. Confirmar os PRs e a relação deles com a versão final antes de usar este documento como evidência.
+> **Verificação documental:** os números de PR e estados abaixo são autodeclarados; não há links para conferi-los. A URL pública atual respondeu em 23/11/2026, mas isso não comprova a data do deploy nem valida o PR #22. O repositório atual não contém exportação CSV integrada. Confirmar os PRs e a relação deles com a versão final antes de usar este documento como evidência.
 
 **Papel nesta sprint:** Desenvolvedor Full Stack / Facilitador
 

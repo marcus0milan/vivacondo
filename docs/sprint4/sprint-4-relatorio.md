@@ -9,11 +9,11 @@
 |---|---|---|---|
 | #11 Exportação CSV | Sim | Não entregue | Existe apenas lógica unitária isolada no módulo JavaScript |
 | Fechamento e regressão | Sim | Parcial | Há seis testes unitários; não cobrem API e banco |
-| Deploy público | Sim | Não confirmado | Não há URL pública verificável no README/registro |
+| Deploy público | Sim | Disponível atualmente; período original não confirmado | [URL](https://vivacondo.onrender.com) respondeu HTTP 200 em 23/11/2026; API reportou banco inicializado. Isso não comprova deploy na Sprint 4 |
 
 ## 2. Incremento funcional demonstrável
 
-As histórias #1–#6 permanecem disponíveis no escopo da aplicação. As histórias #7–#11 não estão integradas no backend atual. Não foi localizado vídeo final da Sprint 4 ou URL pública verificável.
+As histórias #1–#6 permanecem disponíveis no escopo da aplicação. As histórias #7–#11 não estão integradas no backend atual. O site público está atualmente acessível em [vivacondo.onrender.com](https://vivacondo.onrender.com), mas não foi localizado vídeo final da Sprint 4 nem evidência que comprove que o deploy já existia naquele período.
 
 ## 3. Backlog atualizado
 
@@ -30,4 +30,4 @@ Na execução local de 23/11/2026, seis testes Jest passaram, com 78,4% de cober
 
 ## 6. Pendências
 
-Confirmar eventual deploy com URL e evidência, executar testes integrados, completar aceite do cliente e registrar o motivo aprovado para a redução de escopo.
+Executar testes integrados, completar aceite do cliente e registrar a data do deploy e o motivo aprovado para a redução de escopo.

@@ -18,7 +18,7 @@ O registro original relata congelamento de escopo e ritmo constante de trabalho.
 
 ## 3. O que não funcionou
 
-O registro original relata demora no primeiro acesso após inatividade. Sem URL de deploy, não foi possível reproduzir ou confirmar esse comportamento.
+O registro original relata demora no primeiro acesso após inatividade, mas não inclui URL ou evidência contemporânea. O site público atual responde; isso não permite reproduzir nem confirmar o comportamento relatado naquela sprint.
 
 ## 4. Ações para fechamento
 

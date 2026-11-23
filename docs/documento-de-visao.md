@@ -42,7 +42,6 @@ Na versão entregue nesta disciplina, o sistema integra frontend em HTML, CSS e 
 - Integração com sistemas externos de cobrança.
 - Monitoramento de acesso por reconhecimento ou equipamentos físicos.
 - Upload e processamento de PDF do regimento nesta implementação atual.
-- Implantação pública permanente, até que o ambiente de produção seja concluído.
 
 ## 6. Requisitos mínimos do Manual
 
@@ -53,7 +52,7 @@ Na versão entregue nesta disciplina, o sistema integra frontend em HTML, CSS e 
 | Regra de negócio não trivial | Validação de CPF, conflito de reserva, limite mensal e permissões por perfil |
 | Consulta agregada | Não entregue no backend nesta versão; corresponde à história #8 do backlog |
 | Validações em interface e banco | Validação de campos no frontend/API e constraints, índices e checks no PostgreSQL |
-| Deploy público por URL | Pendente. O README informa que o deploy ainda não foi publicado |
+| Deploy público por URL | [https://vivacondo.onrender.com](https://vivacondo.onrender.com) respondeu HTTP 200 em 23/11/2026; `GET /api/setup` informou banco inicializado |
 | Repositório Git com README | Repositório público no GitHub, com instruções de instalação e execução |
 
 ## 7. Riscos identificados
@@ -64,4 +63,4 @@ Na versão entregue nesta disciplina, o sistema integra frontend em HTML, CSS e 
 | Credencial da OpenAI exposta | Uso indevido ou custo inesperado | Manter chave somente em variável de ambiente |
 | Divergência entre escopo planejado e entregue | Avaliação inadequada do incremento | Registrar explicitamente entregas e desvios |
 | Dependência de validação manual | Cobertura limitada de regressões | Manter suíte Jest para regras isoladas |
-| Ausência de publicação pública | Não atende requisito de acesso por URL | Preparar deploy e registrar a URL no README |
+| Indisponibilidade do deploy durante a apresentação | Impede a demonstração pública | Verificar o site e a API antes da apresentação |

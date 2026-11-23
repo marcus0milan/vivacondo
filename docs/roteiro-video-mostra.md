@@ -3,7 +3,7 @@
 Este roteiro de aproximadamente 10 minutos é material complementar da Mostra Virtual. Ele **não substitui** o vídeo E10 de 3–5 minutos definido no [Roteiro de Apresentação](roteiro-apresentacao.md).
 
 **Link do vídeo:** pendente  
-**URL do sistema usada na gravação:** pendente de confirmação
+**URL do sistema:** [https://vivacondo.onrender.com](https://vivacondo.onrender.com) — acessível e com banco inicializado em 23/11/2026. Confirmar novamente antes de gravar.
 
 ## Blocos
 
@@ -19,7 +19,7 @@ Este roteiro de aproximadamente 10 minutos é material complementar da Mostra Vi
 
 ## Cuidados antes de gravar
 
-- Confirmar deploy e URL; se não houver ambiente público, dizer que a demonstração é local.
+- Confirmar disponibilidade do site e dos fluxos que serão demonstrados antes de gravar.
 - Não demonstrar painel agregado, upload PDF, histórico ou exportação como recursos concluídos.
 - Usar dados fictícios e não mostrar chaves, senhas ou informações pessoais.
 - Demonstrar o assistente somente se regimento e chave estiverem configurados.

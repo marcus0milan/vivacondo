@@ -1,7 +1,7 @@
 # Documentação Final — VivaCondo
 
 **Repositório:** https://github.com/marcus0milan/vivacondo<br>
-**Deploy definitivo:** não há URL verificável registrada nos arquivos atuais; preencher após confirmar acesso público.<br>
+**Deploy público:** [https://vivacondo.onrender.com](https://vivacondo.onrender.com) — HTTP 200 e API confirmou banco inicializado em 23/11/2026.<br>
 **Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047) · Felipe Savegnago Pires (RA 2840482421034) · Marcus Vinicius Milan (RA 2840482421001)
 
 ## 1. Índice de artefatos do semestre
@@ -41,7 +41,7 @@ O repositório não contém registro verificável de renegociação formal das h
 
 ## 3. Deploy e aceite
 
-Não foi fornecida uma URL que permita confirmar a publicação. O README descreve execução local; portanto, esta documentação não declara o deploy público como concluído. O Termo de Aceite do Cliente permanece sem parecer e assinatura.
+O deploy público foi acessível em 23/11/2026. A consulta somente de leitura `GET /api/setup` retornou `initialized=true`, confirmando que a API alcançou um banco inicializado. Isso não substitui testes funcionais de persistência nem aceite do cliente; o [Termo de Aceite](termo-aceite-cliente.md) permanece sem parecer e assinatura.
 
 ## 4. Arquitetura final
 
@@ -70,4 +70,4 @@ Consultar [README.md](../README.md) para pré-requisitos, variáveis de ambiente
 
 ## 7. Observação sobre registros históricos
 
-Os relatórios individuais das Sprints 3 e 4 citam PRs sem links verificáveis e descrevem entregas que não aparecem no backend atual. Os relatos de deploy e testes CT14–CT18 também não têm URL ou logs associados. Esses itens estão identificados nos respectivos documentos como autodeclarados e pendentes de confirmação; não são usados aqui como prova de implementação.
+Os relatórios individuais das Sprints 3 e 4 citam PRs sem links verificáveis e descrevem entregas que não aparecem no backend atual. Os relatos históricos de deploy e testes CT14–CT18 não têm evidências datadas da época; a URL atualmente disponível não comprova quando o deploy foi realizado nem valida aqueles testes.

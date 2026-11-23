@@ -2,7 +2,7 @@
 
 **Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)
 
-**Ambiente documentado:** execução local. Capturas reais do sistema publicado não foram fornecidas; este manual não afirma que o deploy público está ativo.
+**Ambiente publicado:** [https://vivacondo.onrender.com](https://vivacondo.onrender.com), acessível em 23/11/2026; a API reportou banco inicializado. Capturas reais de produção ainda não foram fornecidas. As instruções de instalação local estão no [README](../README.md).
 
 ## 1. Introdução
 

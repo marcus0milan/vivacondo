@@ -2,7 +2,7 @@
 
 Sistema de gestão condominial para organizar cadastros, reservas de áreas comuns, chamados de manutenção e consulta ao regimento por um assistente virtual.
 
-**Deploy:** não há URL pública confirmada nesta versão do repositório. A execução documentada abaixo é local.<br>
+**Deploy:** [https://vivacondo.onrender.com](https://vivacondo.onrender.com) — verificado em 23/11/2026 (HTTP 200); a API reportou banco inicializado em `GET /api/setup`.<br>
 **Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047) · Felipe Savegnago Pires (RA 2840482421034) · Marcus Vinicius Milan (RA 2840482421001) · Laboratório de Engenharia de Software · ADS Fatec Ribeirão Preto
 
 ## Stack

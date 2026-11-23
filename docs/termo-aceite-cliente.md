@@ -22,12 +22,12 @@ Comparar com o [Termo de Aceite do Projeto (E2b)](../backlog/sprint1/e2b.md). As
 | #10 | Histórico de reservas e chamados | Não implementado no backend | |
 | #11 | Exportação de relatório CSV | Não implementada no backend | |
 | #12 | Boletos e PIX | Fora do escopo (Won't) | |
-| — | Deploy público | Não há URL confirmada neste documento | |
+| — | Deploy público | [URL](https://vivacondo.onrender.com) respondeu HTTP 200 em 23/11/2026; API reportou banco inicializado | Avaliador ainda deve verificar o sistema e registrar o parecer |
 
 ## 2. Ressalvas e pendências
 
 - A coluna do avaliador deve ser preenchida pela pessoa que realizou a avaliação.
-- A URL de produção e os testes executados devem ser apresentados antes de registrar aceite.
+- Os testes executados e as funcionalidades do escopo devem ser verificados pelo avaliador antes de registrar aceite.
 
 ## 3. Parecer
 

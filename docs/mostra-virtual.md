@@ -21,7 +21,7 @@
 ## Links
 
 - **Repositório:** https://github.com/marcus0milan/vivacondo
-- **Deploy público:** pendente de URL verificável
+- **Deploy público:** [https://vivacondo.onrender.com](https://vivacondo.onrender.com) — HTTP 200; API confirmou banco inicializado em 23/11/2026
 - **Vídeo da Mostra:** pendente
 
 ## Materiais visuais
