@@ -31,7 +31,7 @@
 | #5 Chamados | Implementada | Abertura por morador |
 | #6 Assistente do regimento | Implementada com configuração | Requer arquivo de texto e chave OpenAI |
 | #7 Gestão de chamados | Não implementada | Sem endpoint no backend |
-| #8 Painel agregado | Não implementado | Sem endpoint/tela integrados no backend |
+| #8 Painel agregado | Não implementado | `/api/units` agrupa contagem de moradores por unidade, mas não há o painel/relatório solicitado |
 | #9 Upload de PDF | Não implementado | Regimento configurado por arquivo de texto |
 | #10 Histórico | Não implementado | Sem consulta de histórico no backend |
 | #11 Exportação CSV | Não implementada | Teste isolado não constitui exportação integrada |

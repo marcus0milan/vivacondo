@@ -50,7 +50,7 @@ Na versão entregue nesta disciplina, o sistema integra frontend em HTML, CSS e 
 | Autenticação com 2+ perfis | Perfis MORADOR e SINDICO, com rotas e validações no backend |
 | 6+ entidades com relacionamento N:N | Usuários, condomínio, unidade, morador, síndico, área comum, reserva e chamado; reserva relaciona morador e área comum |
 | Regra de negócio não trivial | Validação de CPF, conflito de reserva, limite mensal e permissões por perfil |
-| Consulta agregada | Não entregue no backend nesta versão; corresponde à história #8 do backlog |
+| Consulta agregada (relatório/dashboard) | Parcial: `/api/units` retorna a contagem de moradores por unidade com `COUNT`/`GROUP BY`; o painel da história #8 não foi implementado |
 | Validações em interface e banco | Validação de campos no frontend/API e constraints, índices e checks no PostgreSQL |
 | Deploy público por URL | [https://vivacondo.onrender.com](https://vivacondo.onrender.com) respondeu HTTP 200 em 23/11/2026; `GET /api/setup` informou banco inicializado |
 | Repositório Git com README | Repositório público no GitHub, com instruções de instalação e execução |
