@@ -86,7 +86,7 @@ Plaintext
 /backend/VivaCondo.Api   — API ASP.NET Core e schema PostgreSQL
 /frontend                — interface web das Sprints 1 e 2
 /docs                    — documentação do projeto
-/tests                   — suíte de testes unitários automatizados
+/test                    — suíte de testes unitários automatizados
 /scripts                 — scripts de automação para execução local
 /backlog                 — registros de backlog
 Convenções da equipe
@@ -125,3 +125,20 @@ O script aplicado na inicialização está em backend\VivaCondo.Api\database\sch
 
 Licença / Uso acadêmico
 Projeto desenvolvido para a disciplina de Laboratório de Engenharia de Software — ADS, Fatec Ribeirão Preto, 2026.
+
+## Documentação da disciplina
+
+- [Índice das entregas E1–E10](docs/README.md)
+- [Documento de Visão](docs/documento-de-visao.md)
+- [Declaração de Escopo Compartilhado](docs/declaracao-escopo-compartilhado.md)
+- [Backlog Priorizado](backlog/sprint1/e2a.md)
+- [Termo de Aceite do Projeto](backlog/sprint1/e2b.md)
+- [Diagramas UML](docs/modelagem/e3a.md)
+- [DER](docs/modelagem/e3b.md)
+- [DDL](docs/modelagem/e3c.md)
+- [Plano de Testes](docs/plano-de-testes.md)
+- [Relatório de Testes](docs/relatorio-testes-final.md)
+- [Termo de Aceite do Cliente](docs/termo-aceite-cliente.md)
+- [Documentação Final](docs/documentacao-final.md)
+- [Manual do Usuário](docs/manual-do-usuario.md)
+- [Roteiro de Apresentação](docs/roteiro-apresentacao.md)
