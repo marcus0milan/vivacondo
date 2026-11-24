@@ -1,6 +1,6 @@
 # Contribuição da Equipe — Sprint 1
 
-Este documento organiza por integrante as responsabilidades e frentes relacionadas ao incremento da Sprint 1. Os papéis foram consultados no termo de aceite em [`backlog/sprint1/e2b.md`](../../backlog/sprint1/e2b.md), e as funcionalidades entregues foram conferidas no [relatório de entrega](./relatório-de-entrega-sprint1.md) e nas [evidências de teste](./sprint1-evidencias-testes.md).
+Este documento organiza por integrante as responsabilidades e frentes relacionadas ao incremento da Sprint 1. Os papéis foram consultados no termo de aceite em [`backlog/sprint1/e2b.md`](../../backlog/sprint1/e2b.md), e as funcionalidades entregues foram conferidas no [relatório de entrega](./sprint1-relatório-de-entrega.md) e nas [evidências de teste](./sprint1-evidencias-testes.md).
 
 ## Guilherme Rastelli Fernandes — Product Owner / AI & Backend Specialist
 
@@ -11,7 +11,7 @@ Este documento organiza por integrante as responsabilidades e frentes relacionad
 - contribuir na compreensão dos critérios de aceite de autenticação, cadastros e regras de acesso;
 - frente técnica de backend prevista no papel, relacionada à API ASP.NET Core e à comunicação com PostgreSQL.
 
-**Resultado do incremento relacionado:** as histórias priorizadas #1, #2 e #3 foram implementadas na aplicação integrada, conforme descrito no [relatório de entrega](./relatório-de-entrega-sprint1.md).
+**Resultado do incremento relacionado:** as histórias priorizadas #1, #2 e #3 foram implementadas na aplicação integrada, conforme descrito no [relatório de entrega](./sprint1-relatório-de-entrega.md).
 
 ## Felipe Savegnago Pires — Backend Developer & Database Lead
 

@@ -1,124 +1,142 @@
-# Sistema Inteligente de Gerenciamento de Condomínios
+# VivaCondo
 
-Projeto de gestão condominial com módulos planejados de controle financeiro, logístico e de segurança. Reservas, abertura de chamados e consulta ao regimento via assistente estão implementadas; análise de sentimentos e monitoramento de acesso permanecem fora do incremento atual.
+Sistema de gestão condominial para organizar cadastros, reservas de áreas comuns, chamados de manutenção e consulta ao regimento por um assistente virtual.
 
-**Deploy:** ainda não publicado — previsto para Semana X
-**Equipe:** Guilherme Rastelli (2840482421047) · Felipe Savegnago (2840482421034) · Marcus Milan (2840482421001) · Laboratório de Engenharia de Software · ADS Fatec Ribeirão Preto
+**Deploy:** [https://vivacondo.onrender.com](https://vivacondo.onrender.com) — verificado em 23/11/2026 (HTTP 200); a API reportou banco inicializado em `GET /api/setup`.<br>
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047) · Felipe Savegnago Pires (RA 2840482421034) · Marcus Vinicius Milan (RA 2840482421001) · Laboratório de Engenharia de Software · ADS Fatec Ribeirão Preto
 
 ## Stack
-- Frontend atual: HTML, CSS e JavaScript, sem dependências ou etapa de build
-- Backend: C# com .NET 8 (ASP.NET Core)
-- Banco de dados: PostgreSQL 15+
-- Assistente do regimento: API da OpenAI, com chave configurada localmente
 
-## Incremento das Sprints 1 e 2
-O frontend permite configurar o condomínio e o primeiro acesso de síndico, entrar como síndico ou morador, cadastrar unidades e moradores vinculados e cadastrar áreas comuns. O morador também pode solicitar reservas, abrir chamados de manutenção e fazer perguntas ao assistente com base no regimento fornecido.
+- Frontend: HTML, CSS e JavaScript, servido pela API.
+- Backend: C# com ASP.NET Core .NET 8.
+- Banco de dados: PostgreSQL 15+.
+- Assistente: API da OpenAI, opcional e configurada por variáveis de ambiente.
+- Leitura de PDF: PdfPig extrai o texto do regimento enviado pelo síndico; o PDF e o texto são persistidos no PostgreSQL.
+- Testes unitários auxiliares: Jest 29.
 
-O sistema usa a API e o PostgreSQL: a senha é derivada no servidor, o acesso é controlado por token/perfil e os dados são persistidos no banco. A API valida CPF, vínculo do morador, permissões, conflitos de horário e limite mensal de reservas. O limite inicial é de 2 reservas ativas por unidade/mês; reservas pendentes e confirmadas contam para esse limite.
+## Pré-requisitos
 
-O assistente envia à API da OpenAI somente trechos relevantes do arquivo de regimento configurado. Se a busca não encontrar conteúdo relacionado, responde que não encontrou a informação no documento. Para esta entrega, configure um arquivo de texto com o conteúdo do regimento; o arquivo deve ser fornecido localmente.
+- .NET 8 SDK.
+- PostgreSQL 15+ e `psql` (ou uma ferramenta equivalente de administração).
+- Node.js 20+ e npm 10+ para executar os testes Jest.
 
 ## Como rodar localmente
 
-Para executar em outro computador, cada pessoa precisa ter o repositório, o **.NET 8 SDK** e um **PostgreSQL 15 ou superior** instalados. Esta configuração roda a aplicação localmente na máquina de quem a executa; não publica um site para outras pessoas acessarem pela internet.
+1. Clone o repositório e entre na pasta raiz:
 
-### 1. Obtenha o projeto e instale os pré-requisitos
+   ```powershell
+   git clone https://github.com/marcus0milan/vivacondo.git
+   cd vivacondo
+   ```
 
-- Clone ou baixe este repositório e abra um terminal na pasta raiz (a pasta que contém `README.md`).
-- Instale o .NET 8 SDK e o PostgreSQL 15+. O serviço do PostgreSQL deve estar em execução.
-- Para criar o banco pelo terminal, instale/disponibilize também o cliente `psql`. Alternativamente, crie o banco pelo pgAdmin.
+2. Crie um banco vazio chamado `vivacondo`:
 
-Confirme que o terminal está na raiz do projeto:
+   ```powershell
+   psql -h localhost -U postgres -c "CREATE DATABASE vivacondo;"
+   ```
+
+3. Configure as variáveis no terminal. O arquivo `.env.example` é apenas uma referência; ASP.NET Core não o carrega automaticamente.
+
+   **PowerShell:**
+
+   ```powershell
+   $env:ConnectionStrings__Default = "Host=localhost;Port=5432;Database=vivacondo;Username=postgres;Password=SUBSTITUA"
+   $bytes = New-Object byte[] 32
+   $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+   $rng.GetBytes($bytes)
+   $env:JWT_SIGNING_KEY = [Convert]::ToBase64String($bytes)
+   $rng.Dispose()
+   $env:ASPNETCORE_URLS = "http://localhost:5080"
+   ```
+
+   **Bash:**
+
+   ```bash
+   export ConnectionStrings__Default='Host=localhost;Port=5432;Database=vivacondo;Username=postgres;Password=SUBSTITUA'
+   export JWT_SIGNING_KEY="$(openssl rand -base64 32)"
+   export ASPNETCORE_URLS='http://localhost:5080'
+   ```
+
+4. Inicie a API:
+
+   ```powershell
+   dotnet run --project backend\VivaCondo.Api\VivaCondo.Api.csproj
+   ```
+
+   A API aplica [`schema.sql`](backend/VivaCondo.Api/database/schema.sql) na inicialização. Abra `http://localhost:5080`; no primeiro acesso, configure o condomínio e a conta do síndico.
+
+5. (Opcional) Depois de concluir o primeiro acesso, carregue dados fictícios locais:
+
+   ```powershell
+   psql -h localhost -U postgres -d vivacondo -f backend\VivaCondo.Api\database\seed-dev.sql
+   ```
+
+6. O síndico pode enviar um PDF de texto selecionável pela opção **Regimento PDF**; o arquivo e o texto extraído ficam no banco do condomínio. Para manter um arquivo de texto legado como alternativa, configure `REGIMENTO_PATH`. Sem um regimento cadastrado, o assistente informa que não está configurado.
+7. Para habilitar respostas com IA, configure também `OPENAI_API_KEY`. O restante do sistema funciona sem essa chave, mas as respostas do assistente ficam indisponíveis.
+
+Não use senhas, chaves de API ou dados pessoais reais em demonstrações. Não faça commit de valores secretos.
+
+## Variáveis de ambiente
+
+| Variável | Obrigatória | Descrição |
+|---|---|---|
+| `ConnectionStrings__Default` | Sim | String de conexão PostgreSQL |
+| `JWT_SIGNING_KEY` | Sim | Chave aleatória de pelo menos 32 bytes para assinar tokens |
+| `ASPNETCORE_URLS` | Não | Endereço local; exemplo `http://localhost:5080` |
+| `OPENAI_API_KEY` | Não | Chave para chamadas ao assistente |
+| `REGIMENTO_PATH` | Não | Caminho opcional para arquivo de texto legado; o PDF enviado pelo síndico é armazenado no PostgreSQL |
+
+## Estrutura do repositório
 
 ```text
-README.md
-backend/
-frontend/
+/backend/VivaCondo.Api  — API ASP.NET Core e schema PostgreSQL
+/frontend               — interface web
+/docs                   — entregas E1–E10, modelagem e evidências
+/test                   — testes unitários Jest
+/backlog                — backlog e termo de aceite do projeto
 ```
 
-### 2. Crie um banco de dados vazio
+## Testes e build
 
-Crie um banco chamado `vivacondo`. Pelo terminal, o comando é:
-
-```sh
-psql -h localhost -U postgres -c "CREATE DATABASE vivacondo;"
-```
-
-Informe a senha do usuário PostgreSQL quando solicitado. Se seu usuário ou porta forem diferentes, adapte-os no comando e na connection string da etapa seguinte. No pgAdmin, a alternativa é criar um banco chamado `vivacondo` conectado ao seu servidor local.
-
-**Use um banco vazio e exclusivo para esta aplicação.** Não carregue nele o script de exemplo de `docs/modelagem/e3c.md` nem reutilize um banco com tabelas de outro exercício. A API cria/atualiza o schema necessário na inicialização; os dados permanecem no PostgreSQL entre execuções.
-
-### 3. Configure e inicie a API
-
-Execute os comandos a partir da raiz do repositório. Configure a connection string com a senha do seu próprio usuário PostgreSQL e gere uma chave JWT aleatória localmente. Não compartilhe nem salve a senha ou a chave no repositório.
-
-**Windows — PowerShell:**
+Testes unitários Jest (regras isoladas em JavaScript):
 
 ```powershell
-$env:ConnectionStrings__Default = "Host=localhost;Port=5432;Database=vivacondo;Username=postgres;Password=SUBSTITUA_PELA_SENHA_DO_POSTGRES"
-$bytes = New-Object byte[] 32
-$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
-$rng.GetBytes($bytes)
-$env:JWT_SIGNING_KEY = [Convert]::ToBase64String($bytes)
-$rng.Dispose()
-$env:ASPNETCORE_URLS = "http://localhost:5080"
-dotnet run --project backend\VivaCondo.Api\VivaCondo.Api.csproj
+npm ci
+npm test
 ```
 
-**macOS ou Linux — Bash:**
+Esses testes não substituem a validação funcional da API e do PostgreSQL. Os cenários manuais e o estado de execução estão em [`docs/plano-de-testes.md`](docs/plano-de-testes.md) e nos relatórios de sprint.
 
-```sh
-export ConnectionStrings__Default='Host=localhost;Port=5432;Database=vivacondo;Username=postgres;Password=SUBSTITUA_PELA_SENHA_DO_POSTGRES'
-export JWT_SIGNING_KEY="$(openssl rand -base64 32)"
-export ASPNETCORE_URLS='http://localhost:5080'
-dotnet run --project backend/VivaCondo.Api/VivaCondo.Api.csproj
-```
-
-O primeiro `dotnet run` restaura as dependências NuGet e compila a API; é necessário ter acesso aos feeds NuGet nessa primeira execução. Mantenha esse terminal aberto enquanto estiver usando a aplicação. Quando aparecer a mensagem de que está ouvindo em `http://localhost:5080`, abra esse endereço no navegador. No primeiro acesso, cadastre o condomínio e o primeiro síndico; depois, o síndico pode cadastrar unidades, moradores e áreas comuns.
-
-Se `dotnet` não for reconhecido, instale o **SDK** (não apenas o runtime), feche e reabra o terminal e confirme com `dotnet --list-sdks`. Se houver erro de conexão, confira se o PostgreSQL está iniciado, se o banco foi criado e se usuário, senha, host e porta da connection string correspondem à instalação local.
-
-### Assistente do regimento (opcional)
-
-O restante do sistema — configuração, login, cadastros, reservas e chamados — pode ser iniciado sem chave da OpenAI ou arquivo do regimento. Para habilitar o assistente, configure também `OPENAI_API_KEY` com uma chave própria e `REGIMENTO_PATH` apontando para um arquivo de texto local com o conteúdo do regimento. No PowerShell, por exemplo:
+Build da API:
 
 ```powershell
-$env:OPENAI_API_KEY = "SUA_CHAVE_DA_OPENAI"
-$env:REGIMENTO_PATH = "C:\caminho\para\regimento.txt"
+dotnet build backend\VivaCondo.Api\VivaCondo.Api.csproj
 ```
 
-No Bash, use `export OPENAI_API_KEY='SUA_CHAVE_DA_OPENAI'` e `export REGIMENTO_PATH='/caminho/para/regimento.txt'`. O arquivo e a chave são individuais, não estão incluídos no repositório, e não devem ser enviados em commits. A API usa `gpt-4o-mini` por padrão.
-
-Não use credenciais ou dados pessoais reais em ambientes de demonstração. As variáveis configuradas no terminal valem para aquela sessão; gere uma chave JWT própria em cada ambiente.
-## Estrutura do repositório
-```
-/frontend                  — interface web das Sprints 1 e 2
-/backend/VivaCondo.Api     — API ASP.NET Core e schema PostgreSQL
-/docs                      — documentação do projeto
-```
+O workflow de CI está em [`.github/workflows/ci.yml`](.github/workflows/ci.yml) e executa o build .NET e os testes Jest.
 
 ## Convenções da equipe
-- Branches: `feature/nome-da-feature`
-- Commits: Conventional Commits
-- Toda PR exige revisão de ao menos 1 integrante antes do merge.
 
-## Validação
-Build da API: `dotnet build backend\VivaCondo.Api\VivaCondo.Api.csproj`.
+- Branches: `feature/nome-da-feature`.
+- Commits: Conventional Commits.
+- Pull requests devem ter revisão de ao menos um integrante.
 
-Fluxos manuais recomendados com a API e PostgreSQL em execução:
-- Configuração inicial uma única vez e rejeição de nova configuração após a criação do primeiro síndico.
-- Login com perfil correto, senha incorreta e perfil incompatível.
-- Cadastro de unidade; tentativa de duplicar bloco/número sem diferenciar maiúsculas.
-- Cadastro de morador com CPF válido e unidade existente; rejeição de CPF inválido, CPF/e-mail duplicado ou unidade de outro condomínio.
-- Cadastro de área com capacidade/horário válidos; rejeição de capacidade inválida e nome duplicado.
-- Confirmar que morador não acessa operações administrativas e que cadastros continuam após reiniciar a API.
-- Solicitar duas reservas com horários sobrepostos na mesma área e confirmar que a segunda é rejeitada; verificar também o limite de duas reservas ativas por unidade no mês e o horário limite da área.
-- Abrir chamado com categoria, localização e descrição; confirmar status inicial “ABERTO” no banco.
-- Consultar o assistente com uma pergunta respondida pelo regimento e outra sem resposta nele; confirmar que a segunda recebe a mensagem de informação não encontrada.
+## Documentação da disciplina
 
-Os três últimos itens validam as histórias #4, #5 e #6 da Sprint 2. O build confirma a compilação da API, mas não substitui esses testes funcionais com PostgreSQL e, para o assistente, com `OPENAI_API_KEY` e `REGIMENTO_PATH` configurados. O estado conhecido da validação está em [Evidências de Validação – Sprint 2](docs/sprint2/evidencias-testes-sprint2.md).
+- [Índice das entregas E1–E10](docs/README.md)
+- [Documento de Visão](docs/documento-de-visao.md)
+- [Declaração de Escopo Compartilhado](docs/declaracao-escopo-compartilhado.md)
+- [Backlog Priorizado](backlog/sprint1/e2a.md)
+- [Termo de Aceite do Projeto](backlog/sprint1/e2b.md)
+- [UML](docs/modelagem/e3a.md) · [DER](docs/modelagem/e3b.md) · [DDL](docs/modelagem/e3c.md)
+- [Roteiro do Protótipo](docs/prototipo.md)
+- [Plano de Testes](docs/plano-de-testes.md)
+- [Relatório de Testes](docs/relatorio-testes-final.md)
+- [Termo de Aceite do Cliente](docs/termo-aceite-cliente.md)
+- [Documentação Final](docs/documentacao-final.md)
+- [Manual do Usuário](docs/manual-do-usuario.md)
+- [Roteiro de Apresentação](docs/roteiro-apresentacao.md)
 
-O script aplicado na inicialização está em `backend\VivaCondo.Api\database\schema.sql`. Reservas e chamados são armazenados no PostgreSQL; o regimento continua sendo fornecido por arquivo de texto local, sem funcionalidade de upload nesta sprint.
+## Uso acadêmico
 
-## Licença / Uso acadêmico
 Projeto desenvolvido para a disciplina de Laboratório de Engenharia de Software — ADS, Fatec Ribeirão Preto, 2026.

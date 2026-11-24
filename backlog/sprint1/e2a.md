@@ -1,16 +1,38 @@
-# Backlog Priorizado â€” Sistema Inteligente de Gerenciamento de CondomÃ­nios
+# Backlog Priorizado — VivaCondo
 
-| # | HistÃ³ria | CritÃ©rios de aceite | Prioridade | Estimativa | Sprint alvo |
-|---|---|---|---|---|---|
-| 1 | Como usuÃ¡rio (morador ou sÃ­ndico), quero me autenticar com e-mail e senha, para que eu acesse as funcionalidades do meu perfil. | - SeparaÃ§Ã£o de rotas e permissÃµes por perfil (Morador vs. SÃ­ndico)<br>- Senha exige no mÃ­nimo 8 caracteres<br>- Mensagem de erro clara em caso de credenciais invÃ¡lidas | Must | 3 | Sprint 1 |
-| 2 | Como sÃ­ndico, quero cadastrar unidades e moradores vinculados ao condomÃ­nio, para que o sistema reconheÃ§a os moradores legÃ­timos. | - Bloco e nÃºmero da unidade devem ser Ãºnicos<br>- ValidaÃ§Ã£o de CPF do morador com constraint no banco<br>- Morador obrigatoriamente associado a uma unidade existente | Must | 5 | Sprint 1 |
-| 3 | Como sÃ­ndico, quero cadastrar Ã¡reas comuns (ex: salÃ£o de festas, churrasqueira), para disponibilizÃ¡-las para reserva. | - Campos obrigatÃ³rios: nome da Ã¡rea, capacidade mÃ¡xima e horÃ¡rio limite de uso<br>- NÃ£o permite Ã¡reas com nomes duplicados no mesmo condomÃ­nio | Must | 3 | Sprint 1 |
-| 4 | Como morador, quero solicitar a reserva de uma área comum em uma data e horário específicos, para utilizar o espaço. | - Impedir sobreposição de reservas para a mesma área e data<br>- Limite de 2 reservas ativas por unidade em cada mês; contam reservas `PENDENTE` e `CONFIRMADA`, mas não `CANCELADA` | Must | 5 | Sprint 2 |
-| 5 | Como morador, quero abrir um chamado de manutenção reportando um problema, para que a administração providencie o conserto. | - Campos obrigatórios: categoria, localização e descrição do problema<br>- Status inicial definido automaticamente como `ABERTO` | Must | 3 | Sprint 2 |
-| 6 | Como morador, quero fazer perguntas em linguagem natural ao assistente virtual, para tirar dúvidas sobre o regimento interno. | - Responder usando trechos do regimento fornecido em arquivo de texto configurado localmente<br>- Retornar mensagem padrão amigável quando a informação não for encontrada no documento | Must | 8 | Sprint 2 |
-| 7 | Como sÃ­ndico, quero atualizar o status e adicionar observaÃ§Ãµes nos chamados de manutenÃ§Ã£o, para gerenciar a resoluÃ§Ã£o das demandas. | - TransiÃ§Ã£o de status controlada (Aberto -> Em Andamento -> ConcluÃ­do/Cancelado)<br>- Exige justificativa em texto ao cancelar um chamado | Must | 5 | Sprint 3 |
-| 8 | Como sÃ­ndico, quero visualizar um painel com o total de chamados agrupados por categoria e status, para identificar os principais gargalos do condomÃ­nio. | - Consulta agregada agrupando chamados por categoria e status atual (GROUP BY / JOIN)<br>- AtualizaÃ§Ã£o de mÃ©tricas ao carregar a pÃ¡gina | Must | 5 | Sprint 3 |
-| 9 | Como sÃ­ndico, quero fazer upload do PDF do regimento interno atualizado, para manter a base de conhecimento da IA em dia. | - Suporte ao upload de arquivos em formato PDF<br>- Processamento e atualizaÃ§Ã£o do repositÃ³rio de contexto utilizado pela API da IA | Should | 5 | Sprint 3 |
-| 10 | Como morador, quero visualizar o histÃ³rico e o status atual das minhas reservas e chamados, para acompanhar minhas solicitaÃ§Ãµes. | - Lista filtrada automaticamente pela unidade do morador logado<br>- Exibe status atualizado em tempo real (Pendente, Confirmada, Em Andamento, etc.) | Should | 3 | Sprint 3 |
-| 11 | Como sÃ­ndico, quero exportar o relatÃ³rio consolidado de chamados em formato CSV, para apresentar em assembleias do condomÃ­nio. | - Exporta os mesmos dados de chamados exibidos no painel gerencial da Sprint 3 | Could | 3 | Sprint 4 |
-| 12 | Como sÃ­ndico, quero emitir boletos e cobranÃ§as via PIX para a taxa condominial, para automatizar o financeiro do condomÃ­nio. | Fora de escopo neste semestre â€” ver Documento de VisÃ£o, seÃ§Ã£o 5 | Won't | â€” | â€” |
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047) · Felipe Savegnago Pires (RA 2840482421034) · Marcus Vinicius Milan (RA 2840482421001)<br>
+**Trilha:** A1
+
+| # | História | Critérios de aceite | Prioridade | Estimativa | Sprint alvo |
+|---|---|---|---|---:|---|
+| 1 | Como morador ou síndico, quero autenticar-me com e-mail e senha, para acessar as funções do meu perfil. | - Permissões separadas por perfil<br>- Senha com mínimo de 8 caracteres<br>- Erro claro para credenciais inválidas | Must | 3 | Sprint 1 |
+| 2 | Como síndico, quero cadastrar unidades e moradores, para reconhecer quem está vinculado ao condomínio. | - Unidade única por bloco/número no condomínio<br>- CPF validado e único<br>- Morador vinculado a unidade existente | Must | 5 | Sprint 1 |
+| 3 | Como síndico, quero cadastrar áreas comuns, para disponibilizá-las para reserva. | - Nome, capacidade e horário limite obrigatórios<br>- Nome único no condomínio | Must | 3 | Sprint 1 |
+| 4 | Como morador, quero solicitar reserva de área comum, para usar o espaço em data e horário específicos. | - Bloqueia sobreposição na mesma área/data<br>- Máximo de 2 reservas `PENDENTE` ou `CONFIRMADA` por unidade/mês<br>- Respeita o horário limite da área | Must | 5 | Sprint 2 |
+| 5 | Como morador, quero abrir chamado de manutenção, para solicitar reparo de um problema. | - Categoria, localização e descrição obrigatórias<br>- Status inicial `ABERTO` | Must | 3 | Sprint 2 |
+| 6 | Como morador, quero consultar o regimento em linguagem natural, para tirar dúvidas sobre as regras. | - Usa trechos de arquivo de texto configurado localmente<br>- Informa quando não encontra resposta no texto | Must | 8 | Sprint 2 |
+| 7 | Como síndico, quero atualizar status e observações dos chamados, para acompanhar sua resolução. | - Transições de status controladas<br>- Justificativa obrigatória ao cancelar | Must | 5 | Sprint 3 |
+| 8 | Como síndico, quero visualizar chamados agrupados por categoria e status, para identificar gargalos. | - Consulta agregada por categoria e status<br>- Métricas atualizadas ao carregar | Must | 5 | Sprint 3 |
+| 9 | Como síndico, quero enviar um PDF atualizado do regimento, para manter o conteúdo do assistente atualizado. | - Aceita PDF<br>- Atualiza o conteúdo usado pelo assistente | Should | 5 | Sprint 3 |
+| 10 | Como morador, quero consultar o histórico de reservas e chamados, para acompanhar minhas solicitações. | - Dados filtrados pelo usuário/unidade autenticada<br>- Exibe o status atual | Should | 3 | Sprint 3 |
+| 11 | Como síndico, quero exportar o relatório consolidado em CSV, para apresentá-lo em assembleias. | - Exporta os mesmos dados do painel | Could | 3 | Sprint 4 |
+| 12 | Como síndico, quero emitir boletos e cobranças via PIX, para automatizar a taxa condominial. | Fora de escopo neste semestre. | Won't | — | — |
+
+## Atualização de status — fim da Sprint 4
+
+| # | Prioridade | Situação observada no código | Observação |
+|---|---|---|---|
+| 1 | Must | Entregue | Login e autorização por perfil |
+| 2 | Must | Entregue | Cadastro de unidades e moradores |
+| 3 | Must | Entregue | Cadastro de áreas comuns |
+| 4 | Must | Entregue | Reserva com validações no backend |
+| 5 | Must | Entregue | Abertura de chamados |
+| 6 | Must | Entregue com configuração | Requer arquivo de regimento e chave da OpenAI |
+| 7 | Must | Implementação adicionada após o registro original da Sprint 4; validação pendente | Síndico lista chamados e atualiza status/observação; transições finais não podem ser reabertas |
+| 8 | Must | Implementação adicionada após o registro original da Sprint 4; validação pendente | `/api/dashboard/calls` agrega chamados por categoria e status no PostgreSQL |
+| 9 | Should | Implementação adicionada após o registro original da Sprint 4; validação pendente | Síndico envia PDF; arquivo e texto extraído são persistidos por condomínio no PostgreSQL |
+| 10 | Should | Implementação adicionada após o registro original da Sprint 4; validação pendente | `/api/history` retorna apenas reservas e chamados do morador autenticado |
+| 11 | Could | Não entregue | A lógica de teste isolada não é exportação integrada |
+| 12 | Won't | Fora de escopo | Conforme planejado |
+
+O board do projeto não foi localizado nos arquivos versionados; esta tabela registra a situação do código nesta revisão, não substitui o histórico do board nem comprova entrega durante as sprints originais.

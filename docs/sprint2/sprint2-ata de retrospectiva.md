@@ -1,24 +1,28 @@
-# Ata de Retrospectiva — Sprint 2 — VivaCondo 
+# Retrospectiva — Sprint 2 — VivaCondo
 
-**Data:** 02/10/2026
-**Presentes:** Guilherme Rastelli Fernandes (RA 2840482421047) – Felipe Savegnago Pires (RA 2840482421034) – Marcus Vinicius Milan (RA 2840482421001)
+**Data registrada:** 03/10/2026<br>
+**Presentes registrados:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)
 
-## 1. Ações da retrospectiva anterior — foram aplicadas?
-| Ação decidida | Aplicada? | Evidência/comentário |
+## 1. Ações da retrospectiva anterior
+
+| Ação | Situação registrada | Evidência |
 |---|---|---|
-| Padronizar validação de campos obrigatórios no backend e frontend | Sim | Aplicado nos endpoints e formulários de áreas comuns e reservas (PR #11) |
-| Realizar merges semanais na branch `main` para evitar conflitos | Sim | Merges realizados nas duas semanas da Sprint 2 sem conflitos críticos |
+| Definir limite mensal de reservas | Aplicada no código e backlog | Duas reservas ativas por unidade/mês; pendentes e confirmadas contam |
+| Implementar reservas | Implementada; teste funcional pendente | API valida conflito, limite e horário da área |
+| Implementar abertura de chamados | Implementada; teste funcional pendente | Endpoint cria chamado com status `ABERTO` |
+| Configurar regimento e validar assistente | Implementação disponível; teste externo pendente | Requer arquivo de texto e chave da OpenAI |
 
 ## 2. O que funcionou bem
-- A divisão clara entre quem desenvolvia a regra de conflito de datas no backend e quem criava o ecrã de reservas no frontend acelerou a entrega.
-- Revisão rápida de Pull Requests no mesmo dia em que eram abertos.
 
-## 3. O que não funcionou
-- O tratamento de fuso horário nas datas de reserva gerou falsos positivos nos primeiros testes locais.
-- Algumas mensagens de erro da API estavam genéricas e dificultaram a exibição clara no frontend.
+- As histórias #4, #5 e #6 têm interface e endpoints no código.
+- Foi registrada a regra de limite mensal para reduzir ambiguidade.
 
-## 4. Ações para a próxima sprint
-| Ação | Responsável |
-|---|---|
-| Padronizar retorno de erros da API em JSON com `{ erro, codigo, detalhes }` | Guilherme Rastelli Fernandes |
-| Preparar massa de dados (seed) maior para testar o dashboard e alertas da Sprint 3 | Felipe Savegnago Pires e Marcus Vinicius Milan |
+## 3. O que precisa melhorar
+
+- Executar e registrar testes funcionais com PostgreSQL.
+- Validar o assistente com arquivo de regimento e chave de teste.
+- Manter os relatórios de sprint vinculados aos caminhos reais do repositório.
+
+## 4. Fechamento
+
+O build da API foi registrado como aprovado no relatório da sprint. Os testes funcionais das histórias #4–#6 não foram registrados como executados. Consulte [evidências da Sprint 2](sprint2-evidencias%20teste.md).

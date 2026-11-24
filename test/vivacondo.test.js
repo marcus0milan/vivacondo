@@ -13,13 +13,27 @@ describe('VivaCondo — Testes Automatizados Sprints 2, 3 e 4 (E6 a E8)', () => 
 
   // SPRINT 2 (E6)
   test('CT07 - Deve bloquear reserva duplicada/sobreposta na mesma área e data', () => {
+    const dataReserva = new Date();
+    dataReserva.setDate(dataReserva.getDate() + 1);
+    const data = dataReserva.toISOString().split('T')[0];
+
+    VivaCondoService.criarReserva({
+      areaId: 1,
+      moradorNome: 'Morador Teste 1',
+      bloco: 'Bloco A',
+      unidade: '105',
+      data,
+      horaInicio: '18:00',
+      horaFim: '20:00'
+    });
+
     expect(() => {
       VivaCondoService.criarReserva({
-        areaId: 1, // Salão de Festas (já reservado 2026-11-20 das 18:00 às 23:00 no seed)
-        moradorNome: 'Teste Conflito',
+        areaId: 1,
+        moradorNome: 'Morador Teste 2',
         bloco: 'Bloco A',
-        unidade: '105',
-        data: '2026-11-20',
+        unidade: '106',
+        data,
         horaInicio: '19:00',
         horaFim: '22:00'
       });

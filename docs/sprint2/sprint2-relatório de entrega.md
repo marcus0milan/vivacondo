@@ -1,30 +1,35 @@
 # Relatório de Entrega — Sprint 2 — VivaCondo
 
-**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires, Marcus Vinicius Milan
-**Período:** Sprint 2
-**Sprint Review:** Realizada com a equipe do projeto
+**Período registrado:** 03/10/2026<br>
+**Sprint Review registrada:** 03/10/2026
 
 ## 1. Planejado vs. entregue
-| História (E2) | Planejada para esta sprint? | Entregue? | Observação |
+
+| História (E2) | Planejada? | Incremento no código | Validação funcional |
 |---|---|---|---|
-| #5 Visualizar áreas comuns disponíveis | Sim | Sim | Implementada no backend (`Program.cs`) e integrada ao frontend |
-| #6 Reservar área comum com bloqueio de conflito de horário | Sim | Sim | Regra de negócio e validação implementadas até a história #6 |
-| #7 Aprovar/recusar reserva pelo síndico | Sim | Não | Não concluída no backend (`Program.cs`); replanejada |
+| #4 Reserva de área comum | Sim | Implementada: conflito, limite mensal e horário limite | Pendente |
+| #5 Abertura de chamado | Sim | Implementada: categoria, localização, descrição e status inicial | Pendente |
+| #6 Assistente do regimento | Sim | Implementado com arquivo de texto local | Pendente; requer arquivo e chave |
 
 ## 2. Incremento funcional demonstrável
-Backend em C# (.NET) com PostgreSQL e frontend integrados cobrindo as histórias #1 a #6 (autenticação, cadastros base, listagem de áreas comuns e criação de reserva com validação de conflito). Como reproduzir localmente: executar `scripts/run-local.ps1` e seguir as instruções do `README.md`.
+
+Interface e API ASP.NET Core .NET 8 com PostgreSQL para reservas, chamados e consulta do regimento configurado localmente. Execução documentada no [README](../../README.md). O sistema foi demonstrado localmente; não há URL pública confirmada neste registro.
+
+Vídeo registrado: [apresentação da Sprint 2](media/apresenta%C3%A7%C3%A3o%20sprint2.mp4).
 
 ## 3. Backlog atualizado
-Histórias #1 a #6 concluídas no código-fonte. A história #7 permaneceu pendente no backend ao fim da Sprint 2.
+
+O [backlog](../../backlog/sprint1/e2a.md) indica as histórias #4–#6 como entregues no código. Não foi localizado link/captura do board nem histórico de mudança de status.
 
 ## 4. Evidências de teste
-Testes executados localmente validando as regras de negócio de reserva e validações de horário. Detalhe completo em `docs/sprints/sprint-2-evidencias-teste.md`.
+
+O build da API foi registrado como aprovado. Os testes funcionais com PostgreSQL e o teste do assistente não foram registrados como executados. Consulte [evidências da Sprint 2](sprint2-evidencias%20teste.md).
 
 ## 5. Retrospectiva e contribuição
-- Ata de retrospectiva: `docs/sprints/sprint-2-retrospectiva.md`
-- Relatórios individuais de contribuição:
-  - `docs/sprints/sprint-2-contribuicao.md`
- 
 
-## 6. Riscos/impedimentos para a próxima sprint
-Ritmo de implementação das rotas adicionais no `Program.cs` (histórias #7 a #11) exigiu redução do escopo funcional entregue no backend, priorizando manter as histórias #1 a #6 estáveis e integradas ao banco PostgreSQL.
+- [Ata de retrospectiva](sprint2-ata%20de%20retrospectiva.md).
+- [Resumo de contribuição](sprint2-contribuicao.md); faltam referências individuais verificáveis a commits/PRs.
+
+## 6. Riscos e próximos passos
+
+Executar e registrar T15–T22 com ambiente configurado. Não declarar os fluxos como testados até anexar resultados reais.

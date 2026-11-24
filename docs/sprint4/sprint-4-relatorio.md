@@ -1,27 +1,35 @@
 # Relatório de Entrega — Sprint 4 — VivaCondo
 
-**Período:** 17/10/2026 a 30/10/2026
-**Sprint Review:** 
+**Período registrado:** 17/10/2026 a 30/10/2026<br>
+**Sprint Review:** data e participantes não confirmados nos registros disponíveis
+
+> Este relatório registra o encerramento original da Sprint 4. As implementações posteriores de #7–#10 não comprovam entrega ou demonstração dentro do período registrado.
 
 ## 1. Planejado vs. entregue
-| História (E2) | Planejada para esta sprint? | Entregue? | Observação |
+
+| História/atividade | Planejada? | Situação observada no backend | Observação |
 |---|---|---|---|
-| #11 Exportação do relatório do painel em CSV pelo síndico | Sim | Sim | Exporta os dados agregados diretamente pelo navegador/API |
-| Refinamento de segurança (OWASP básico, proteção de rotas e sanitização) + Deploy público | Sim | Sim | Aplicação publicada e acessível por URL pública |
+| #11 Exportação CSV | Sim | Não entregue | Existe apenas lógica unitária isolada no módulo JavaScript |
+| Fechamento e regressão | Sim | Parcial | Há seis testes unitários; não cobrem API e banco |
+| Deploy público | Sim | Disponível atualmente; período original não confirmado | [URL](https://vivacondo.onrender.com) respondeu HTTP 200 em 23/11/2026; API reportou banco inicializado. Isso não comprova deploy na Sprint 4 |
 
 ## 2. Incremento funcional demonstrável
-MVP completo do VivaCondo em funcionamento: autenticação por perfil (Morador e Síndico), gestão de blocos/unidades e áreas comuns, reserva de áreas comuns com bloqueio automático de conflito de horário, registo e tratamento de ocorrências, painel analítico com consulta agregada, alertas de vencimento/pendências e exportação em CSV.
-Vídeo de demonstração final da Sprint 4: `docs/sprint4/media/vivacondo-sprint4.mp4`.
+
+As histórias #1–#6 permanecem disponíveis no escopo da aplicação. As histórias #7–#11 não estão integradas no backend atual. O site público está atualmente acessível em [vivacondo.onrender.com](https://vivacondo.onrender.com), mas não foi localizado vídeo final da Sprint 4 nem evidência que comprove que o deploy já existia naquele período.
 
 ## 3. Backlog atualizado
-Board do projeto com 100% das histórias *Must*, *Should* e *Could* planeadas concluídas. Escopo congelado para a bateria final de testes de aceitação (E9).
+
+Consultar a [tabela de status do backlog](../../backlog/sprint1/e2a.md). Board e histórico de cards não estão versionados.
 
 ## 4. Evidências de teste
-Adicionados testes de segurança (bloqueio de acesso não autorizado entre perfis, proteção contra SQL Injection e XSS básico), exportação CSV e regressão ponta a ponta. Detalhe completo: `docs/sprints/sprint-4-evidencias-teste.md`.
 
-## 5. Retrospectiva e contribuição individual
-- Ata de retrospectiva: `docs/sprints/sprint-4-retrospectiva.md`
-- Relatórios individuais de contribuição: `docs/sprints/sprint-4-contribuicao-{guilherme,felipe,marcus}.md`
+Na execução local de 23/11/2026, seis testes Jest passaram, com 78,4% de cobertura de linhas do módulo isolado `frontend/vivacondo-app.js`. Isso não é cobertura do backend nem evidência de CI da Sprint 4. Detalhes no [relatório final](../relatorio-testes-final.md).
 
-## 6. Riscos/impedimentos para a próxima sprint
-Nenhum impedimento técnico bloqueante. O foco da Semana 13 (E9) será a execução do roteiro de aceitação e recolha do Termo de Aceite do Cliente.
+## 5. Retrospectiva e contribuição
+
+- [Retrospectiva](sprint-4-retrospectiva.md); revisar afirmações antigas de deploy e testes em produção.
+- [Contribuição](sprint-4-contribuicao.md); confirmar PRs e relacioná-los ao estado final.
+
+## 6. Pendências
+
+Executar testes integrados, completar aceite do cliente e registrar a data do deploy e o motivo aprovado para a redução de escopo.

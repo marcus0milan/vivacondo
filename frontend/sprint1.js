@@ -6,10 +6,13 @@ let currentUser = null;
 let currentView = 'inicio';
 let toastTimer;
 let accessToken = sessionStorage.getItem(SESSION_KEY);
+let managerCalls = [];
+let callDashboard = null;
+let residentHistory = { reservations: [], calls: [] };
 
 async function apiRequest(path, options = {}) {
   const headers = new Headers(options.headers);
-  if (options.body) headers.set('Content-Type', 'application/json');
+  if (options.body && !(options.body instanceof FormData)) headers.set('Content-Type', 'application/json');
   if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
 
   const response = await fetch(`/api${path}`, { ...options, headers });
@@ -144,11 +147,16 @@ function renderHeader() {
     { id: 'inicio', label: 'Visão geral', icon: '⌂' },
     ...(manager ? [{ id: 'cadastros', label: 'Unidades e moradores', icon: '▤' }] : []),
     { id: 'areas', label: 'Áreas comuns', icon: '⌂' },
-    ...(!manager ? [
+    ...(manager ? [
+      { id: 'chamados-admin', label: 'Gestão de chamados', icon: '!' },
+      { id: 'painel-chamados', label: 'Painel de chamados', icon: '▥' },
+      { id: 'regimento-admin', label: 'Regimento PDF', icon: '▧' },
+    ] : [
       { id: 'reservas', label: 'Reservas', icon: '◷' },
       { id: 'chamados', label: 'Chamados', icon: '!' },
+      { id: 'historico', label: 'Meu histórico', icon: '◴' },
       { id: 'assistente', label: 'Assistente', icon: '✦' },
-    ] : []),
+    ]),
   ];
 
   return `
@@ -190,7 +198,7 @@ function renderDashboard() {
   return `
     <div class="page-heading">
       <div><p class="eyebrow">GESTÃO DO CONDOMÍNIO</p><h1>Olá, ${escapeHTML(currentUser.name.split(' ')[0])}</h1>
-      <p class="page-subtitle">${manager ? 'Gerencie os cadastros básicos do condomínio.' : `Acompanhe as áreas comuns e solicitações do ${escapeHTML(data.condominium.name)}.`}</p></div>
+      <p class="page-subtitle">${manager ? 'Gerencie os cadastros, chamados, regimento e indicadores do condomínio.' : `Acompanhe as áreas comuns e solicitações do ${escapeHTML(data.condominium.name)}.`}</p></div>
       ${manager ? '<a class="button button-primary" href="#cadastros" data-view="cadastros">Cadastrar unidade ou morador</a>' : ''}
     </div>
     ${manager ? `
@@ -199,9 +207,12 @@ function renderDashboard() {
         <article class="metric-card"><div class="metric-top"><span>Moradores cadastrados</span><span class="metric-icon" aria-hidden="true">♙</span></div><div class="metric-value">${data.users.length}</div></article>
         <article class="metric-card"><div class="metric-top"><span>Áreas comuns</span><span class="metric-icon" aria-hidden="true">▦</span></div><div class="metric-value">${data.commonAreas.length}</div></article>
       </div>
-      <section class="panel sprint-intro"><div class="panel-heading"><h2>Funcionalidades entregues</h2><p>Cadastros de condomínio e funcionalidades das Sprints 1 e 2.</p></div><div class="sprint-link-grid">
+      <section class="panel sprint-intro"><div class="panel-heading"><h2>Atalhos do síndico</h2><p>Cadastros e acompanhamento das solicitações do condomínio.</p></div><div class="sprint-link-grid">
         <a class="sprint-link" href="#cadastros" data-view="cadastros"><strong>Unidades e moradores</strong><span>Cadastro com validação de vínculo e CPF.</span></a>
         <a class="sprint-link" href="#areas" data-view="areas"><strong>Áreas comuns</strong><span>Cadastro com capacidade e horário limite.</span></a>
+        <a class="sprint-link" href="#chamados-admin" data-view="chamados-admin"><strong>Gestão de chamados</strong><span>Atualize status e registre observações.</span></a>
+        <a class="sprint-link" href="#painel-chamados" data-view="painel-chamados"><strong>Painel de chamados</strong><span>Consulte os indicadores por categoria e status.</span></a>
+        <a class="sprint-link" href="#regimento-admin" data-view="regimento-admin"><strong>Atualizar regimento</strong><span>Envie o PDF que será consultado pelo assistente.</span></a>
       </div></section>
     ` : `
       <div class="resident-summary">
@@ -212,6 +223,7 @@ function renderDashboard() {
         <div class="sprint-link-grid resident-actions">
           <a class="sprint-link" href="#reservas" data-view="reservas"><strong>Reservar uma área</strong><span>Consulte horários e solicite uma reserva.</span></a>
           <a class="sprint-link" href="#chamados" data-view="chamados"><strong>Abrir chamado</strong><span>Reporte um problema à administração.</span></a>
+          <a class="sprint-link" href="#historico" data-view="historico"><strong>Meu histórico</strong><span>Acompanhe suas reservas e chamados.</span></a>
           <a class="sprint-link" href="#assistente" data-view="assistente"><strong>Consultar o regimento</strong><span>Tire dúvidas com o assistente virtual.</span></a>
         </div>
       </section>
@@ -321,6 +333,120 @@ function renderCalls() {
     </section>`;
 }
 
+function callStatusLabel(status) {
+  return ({
+    ABERTO: 'Aberto',
+    EM_ANDAMENTO: 'Em andamento',
+    CONCLUIDO: 'Concluído',
+    CANCELADO: 'Cancelado',
+  })[status] || status;
+}
+
+function callStatusClass(status) {
+  return ({
+    ABERTO: 'pending',
+    EM_ANDAMENTO: 'progress',
+    CONCLUIDO: 'done',
+    CANCELADO: 'cancelled',
+  })[status] || '';
+}
+
+function renderCallManagement() {
+  if (!managerCalls.length) {
+    return `
+      <div class="page-heading"><div><p class="eyebrow">MANUTENÇÃO</p><h1>Gestão de chamados</h1><p class="page-subtitle">Acompanhe e atualize as solicitações dos moradores.</p></div></div>
+      <section class="panel empty-state">Nenhum chamado foi aberto neste condomínio.</section>`;
+  }
+
+  const rows = managerCalls.map((call) => {
+    const transitions = call.status === 'ABERTO'
+      ? ['EM_ANDAMENTO', 'CANCELADO']
+      : call.status === 'EM_ANDAMENTO' ? ['CONCLUIDO', 'CANCELADO'] : [];
+    return `
+      <article class="call-management-card">
+        <div class="call-management-heading">
+          <div><p class="eyebrow">CHAMADO #${escapeHTML(call.id)} · ${escapeHTML(call.category)}</p>
+            <h2>${escapeHTML(call.location)}</h2>
+            <p class="page-subtitle">${escapeHTML(call.residentName)} · ${escapeHTML(`Bloco ${call.block} · Unidade ${call.unit}`)} · ${escapeHTML(new Date(call.openedAt).toLocaleString('pt-BR'))}</p>
+          </div>
+          <span class="status ${callStatusClass(call.status)}">${callStatusLabel(call.status)}</span>
+        </div>
+        <p class="call-description">${escapeHTML(call.description)}</p>
+        ${call.observation ? `<p class="call-observation"><strong>Observação registrada:</strong> ${escapeHTML(call.observation)}</p>` : ''}
+        ${transitions.length ? `
+          <form class="call-update-form" id="call-update-form" data-error-id="call-update-error-${escapeHTML(call.id)}">
+            <input type="hidden" name="callId" value="${escapeHTML(call.id)}" />
+            <label for="call-status-${escapeHTML(call.id)}">Novo status</label>
+            <select id="call-status-${escapeHTML(call.id)}" name="status" required>
+              <option value="">Selecione</option>
+              ${transitions.map((status) => `<option value="${status}">${callStatusLabel(status)}</option>`).join('')}
+            </select>
+            <label for="call-observation-${escapeHTML(call.id)}">Observação${transitions.includes('CANCELADO') ? ' ou justificativa para cancelar' : ''}</label>
+            <textarea id="call-observation-${escapeHTML(call.id)}" name="observation" maxlength="2000" rows="2"></textarea>
+            <p class="form-error" id="call-update-error-${escapeHTML(call.id)}" role="alert"></p>
+            <button class="button button-primary" type="submit">Salvar atualização</button>
+          </form>` : ''}
+      </article>`;
+  }).join('');
+
+  return `
+    <div class="page-heading"><div><p class="eyebrow">MANUTENÇÃO</p><h1>Gestão de chamados</h1><p class="page-subtitle">Atualize o andamento e registre observações. Chamados concluídos ou cancelados são finais.</p></div></div>
+    <section class="call-management-list">${rows}</section>`;
+}
+
+function renderCallDashboard() {
+  const dashboard = callDashboard;
+  const groups = dashboard?.groups || [];
+  return `
+    <div class="page-heading"><div><p class="eyebrow">INDICADORES DO CONDOMÍNIO</p><h1>Painel de chamados</h1><p class="page-subtitle">Contagem atualizada a partir dos chamados registrados no banco.</p></div></div>
+    <div class="metrics-grid">
+      <article class="metric-card"><div class="metric-top"><span>Total</span></div><div class="metric-value">${dashboard?.total ?? 0}</div></article>
+      <article class="metric-card"><div class="metric-top"><span>Abertos</span></div><div class="metric-value">${dashboard?.open ?? 0}</div></article>
+      <article class="metric-card"><div class="metric-top"><span>Em andamento</span></div><div class="metric-value">${dashboard?.inProgress ?? 0}</div></article>
+      <article class="metric-card"><div class="metric-top"><span>Concluídos / cancelados</span></div><div class="metric-value">${dashboard?.completed ?? 0}<span class="metric-note">/ ${dashboard?.cancelled ?? 0}</span></div></article>
+    </div>
+    <section class="panel list-panel">
+      <div class="panel-header"><div class="panel-heading"><h2>Chamados por categoria e status</h2><p>Agregação consultada no PostgreSQL.</p></div></div>
+      ${groups.length ? `<div class="aggregate-list">
+        <div class="aggregate-row aggregate-header"><strong>Categoria</strong><strong>Status</strong><strong>Quantidade</strong></div>
+        ${groups.map((item) => `<div class="aggregate-row"><span>${escapeHTML(item.category)}</span><span class="status ${callStatusClass(item.status)}">${callStatusLabel(item.status)}</span><strong>${escapeHTML(item.count)}</strong></div>`).join('')}
+      </div>` : '<div class="empty-state">Ainda não há dados de chamados para exibir.</div>'}
+    </section>`;
+}
+
+function renderRegulationManagement() {
+  return `
+    <div class="page-heading"><div><p class="eyebrow">REGIMENTO INTERNO</p><h1>Atualizar regimento</h1><p class="page-subtitle">Envie um PDF com texto selecionável. O conteúdo extraído será usado pelo assistente.</p></div></div>
+    <section class="panel">
+      <div class="panel-header"><div class="panel-heading"><h2>Arquivo do regimento</h2><p>PDF de até 10 MB e 300 páginas; documentos digitalizados como imagem não são aceitos.</p></div></div>
+      <form class="form-card" id="regulation-upload-form">
+        <label for="regulation-pdf">Selecionar PDF</label>
+        <input id="regulation-pdf" name="file" type="file" accept="application/pdf,.pdf" required />
+        <p class="form-error" id="regulation-upload-error" role="alert"></p>
+        <button class="button button-primary" type="submit">Enviar e atualizar conteúdo</button>
+      </form>
+    </section>`;
+}
+
+function renderResidentHistory() {
+  const reservations = residentHistory.reservations || [];
+  const calls = residentHistory.calls || [];
+  return `
+    <div class="page-heading"><div><p class="eyebrow">MINHAS SOLICITAÇÕES</p><h1>Meu histórico</h1><p class="page-subtitle">Reservas e chamados vinculados à sua conta.</p></div></div>
+    <section class="panel list-panel">
+      <div class="panel-header"><div class="panel-heading"><h2>Reservas</h2><p>${reservations.length} registro(s)</p></div></div>
+      ${reservations.length ? `<div class="history-list">${reservations.map((item) => `
+        <article class="history-row"><div><strong>${escapeHTML(item.areaName)}</strong><small>${escapeHTML(item.date)} · ${escapeHTML(item.startTime)}–${escapeHTML(item.endTime)}</small></div>
+          <span class="status ${item.status === 'CONFIRMADA' ? 'done' : item.status === 'CANCELADA' ? 'cancelled' : 'pending'}">${escapeHTML(item.status)}</span></article>`).join('')}</div>` : '<div class="empty-state">Você ainda não tem reservas.</div>'}
+    </section>
+    <section class="panel list-panel">
+      <div class="panel-header"><div class="panel-heading"><h2>Chamados</h2><p>${calls.length} registro(s)</p></div></div>
+      ${calls.length ? `<div class="history-list">${calls.map((item) => `
+        <article class="history-row"><div><strong>${escapeHTML(item.category)} · ${escapeHTML(item.location)}</strong><small>${escapeHTML(item.description)} · ${escapeHTML(new Date(item.openedAt).toLocaleString('pt-BR'))}</small></div>
+          <span class="status ${callStatusClass(item.status)}">${callStatusLabel(item.status)}</span></article>`).join('')}</div>` : '<div class="empty-state">Você ainda não abriu chamados.</div>'}
+    </section>`;
+}
+
 function renderAssistant() {
   return `
     <div class="page-heading"><div><p class="eyebrow">REGIMENTO INTERNO</p><h1>Assistente virtual</h1><p class="page-subtitle">Faça uma pergunta; as respostas usam somente o regimento cadastrado.</p></div></div>
@@ -336,9 +462,13 @@ function renderAssistant() {
 
 function renderView() {
   if (currentView === 'cadastros' && currentUser.profile === 'SINDICO') return renderManagement();
+  if (currentView === 'chamados-admin' && currentUser.profile === 'SINDICO') return renderCallManagement();
+  if (currentView === 'painel-chamados' && currentUser.profile === 'SINDICO') return renderCallDashboard();
+  if (currentView === 'regimento-admin' && currentUser.profile === 'SINDICO') return renderRegulationManagement();
   if (currentView === 'areas') return renderAreas();
   if (currentView === 'reservas' && currentUser.profile === 'MORADOR') return renderReservations();
   if (currentView === 'chamados' && currentUser.profile === 'MORADOR') return renderCalls();
+  if (currentView === 'historico' && currentUser.profile === 'MORADOR') return renderResidentHistory();
   if (currentView === 'assistente' && currentUser.profile === 'MORADOR') return renderAssistant();
   return renderDashboard();
 }
@@ -352,11 +482,19 @@ function renderApp() {
 }
 
 async function navigate(view) {
-  if (view === 'cadastros' && currentUser.profile !== 'SINDICO') {
-    showToast('Apenas o perfil de síndico pode gerenciar unidades e moradores.');
+  const managerViews = ['cadastros', 'chamados-admin', 'painel-chamados', 'regimento-admin'];
+  const residentViews = ['reservas', 'chamados', 'historico', 'assistente'];
+  if (managerViews.includes(view) && currentUser.profile !== 'SINDICO') {
+    showToast('Esta área está disponível apenas para o perfil de síndico.');
+    view = 'inicio';
+  } else if (residentViews.includes(view) && currentUser.profile !== 'MORADOR') {
+    showToast('Esta área está disponível apenas para o perfil de morador.');
     view = 'inicio';
   }
   await loadAccountData();
+  if (view === 'chamados-admin') managerCalls = await apiRequest('/calls');
+  if (view === 'painel-chamados') callDashboard = await apiRequest('/dashboard/calls');
+  if (view === 'historico') residentHistory = await apiRequest('/history');
   currentView = view;
   window.history.replaceState(null, '', `#${view}`);
   renderApp();
@@ -490,6 +628,30 @@ async function handleAssistant(form) {
   target.hidden = false;
 }
 
+async function handleManagerCallUpdate(form) {
+  const values = readForm(form);
+  const callId = Number(values.callId);
+  const result = await apiRequest(`/calls/${callId}`, {
+    method: 'PUT',
+    body: JSON.stringify({ status: values.status, observation: values.observation.trim() }),
+  });
+  showToast(`Chamado #${result.id} atualizado para ${callStatusLabel(result.status)}.`);
+  await navigate('chamados-admin');
+}
+
+async function handleRegulationUpload(form) {
+  const file = form.querySelector('input[name="file"]').files[0];
+  if (!file) {
+    displayFormError('regulation-upload-error', 'Selecione um arquivo PDF.');
+    return;
+  }
+  const body = new FormData();
+  body.append('file', file);
+  const result = await apiRequest('/regulation', { method: 'POST', body });
+  showToast(`Regimento atualizado: ${result.pageCount} página(s), ${result.extractedCharacters} caracteres extraídos.`);
+  form.reset();
+}
+
 document.addEventListener('click', (event) => {
   const viewLink = event.target.closest('[data-view]');
   if (viewLink && currentUser) {
@@ -520,6 +682,8 @@ document.addEventListener('submit', async (event) => {
     else if (form.id === 'area-form') await handleArea(form);
     else if (form.id === 'reservation-form') await handleReservation(form);
     else if (form.id === 'call-form') await handleCall(form);
+    else if (form.id === 'call-update-form') await handleManagerCallUpdate(form);
+    else if (form.id === 'regulation-upload-form') await handleRegulationUpload(form);
     else if (form.id === 'assistant-form') await handleAssistant(form);
   } catch (error) {
     const errorId = {
@@ -530,9 +694,11 @@ document.addEventListener('submit', async (event) => {
       'area-form': 'area-error',
       'reservation-form': 'reservation-error',
       'call-form': 'call-error',
+      'regulation-upload-form': 'regulation-upload-error',
       'assistant-form': 'assistant-error',
     }[form.id];
-    if (errorId) displayFormError(errorId, error.message || 'Não foi possível concluir a operação.');
+    const targetErrorId = form.dataset.errorId || errorId;
+    if (targetErrorId) displayFormError(targetErrorId, error.message || 'Não foi possível concluir a operação.');
     if (form.id === 'login-form' && errorId) displayFormError(errorId, error.message);
   }
 });

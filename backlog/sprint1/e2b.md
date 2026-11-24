@@ -1,36 +1,51 @@
 # Termo de Aceite do Projeto — Sistema Inteligente de Gerenciamento de Condomínios
 
-**Equipe:** Guilherme Rastelli Fernandes 2840482421047, Felipe Savegnago Pires 2840482421034, Marcus Vinicius Milan 2840482421001
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)
+
 **Trilha:** A1
-**Data:** 21/08/2026
+
+**Data:** 21/08/2026<br>
+**Situação:** Rascunho; não há aprovação/assinatura registrada no repositório.
 
 ## 1. Escopo aceito para o semestre (funcionalidades Must + Should)
-1. Autenticação e controle de acesso para perfis Morador e Síndico.
-2. Cadastro e gestão de unidades, moradores e áreas comuns do condomínio.
-3. Agendamento e reserva de áreas comuns com validação automática de conflitos de horário.
-4. Abertura e acompanhamento de chamados de manutenção pelos moradores.
-5. Assistente virtual de Inteligência Artificial para tirar dúvidas sobre o regimento interno (RAG).
-6. Dashboard gerencial do Síndico com consulta agregada do status dos chamados.
-7. Upload do documento de regimento interno em PDF para atualização da base da IA.
+
+1. Histórias #1 a #6 do backlog: autenticação, cadastros, reservas, chamados e consulta do regimento.
+2. História #7: atualização de chamados pelo síndico.
+3. História #8: painel agregado de chamados.
+4. História #9: atualização do regimento por PDF.
+5. História #10: histórico de reservas e chamados do morador.
 
 ## 2. Critérios de pronto do MVP
-- [ ] Morador consegue fazer perguntas em linguagem natural sobre o regimento e receber respostas coerentes via IA.
-- [ ] Sistema impede automaticamente agendamento duplicado para a mesma área comum no mesmo horário.
-- [ ] Síndico visualiza o painel com totalizadores de chamados agrupados por categoria e status.
-- [ ] Aplicação implantada e acessível publicamente via URL na nuvem.
-- [ ] Repositório no GitHub com script DDL e instrução de execução no README.
+
+- [ ] Morador consegue autenticar-se e consultar o regimento por meio do assistente.
+- [ ] Sistema impede agendamento com conflito de horário na mesma área comum.
+- [ ] Morador consegue abrir chamado de manutenção.
+- [ ] Síndico consegue cadastrar unidades, moradores e áreas comuns.
+- [ ] Síndico visualiza o painel agregado de chamados definido na história #8.
+- [ ] Dados são persistidos em PostgreSQL.
+- [ ] Requisitos de deploy público e documentação do §3 do Manual são verificados.
+- [ ] Repositório no GitHub contém README, código, DDL e documentação.
 
 ## 3. Stack tecnológica definida
+
 | Camada | Tecnologia |
 |---|---|
-| Frontend | HTML5, CSS3, JavaScript / Razor Pages |
-| Backend | C# (.NET Core) + API OpenAI |
-| Banco de dados | PostgreSQL (ou SQL Server) |
-| Deploy | Azure / Render / Railway |
+| Frontend | HTML5, CSS3 e JavaScript |
+| Backend | C# com ASP.NET Core .NET 8 |
+| Banco de dados | PostgreSQL 15+ |
+| Inteligência artificial | API da OpenAI |
+| Deploy | Não há URL pública confirmada neste rascunho |
 
 ## 4. Papéis iniciais da equipe (Sprint 1)
+
 | Integrante | Papel |
 |---|---|
-| Guilherme Rastelli Fernandes | Product Owner / AI & Backend Specialist |
-| Felipe Savegnago Pires | Backend Developer & Database Lead |
-| Marcus Vinicius Milan | Frontend Developer & QA Lead |
+| Guilherme Rastelli Fernandes | Product Owner e responsável pela integração com IA |
+| Felipe Savegnago Pires | Desenvolvimento backend e banco de dados |
+| Marcus Vinicius Milan | Frontend e garantia da qualidade |
+
+## 5. Aprovação
+
+- Professor: __________________________________________
+- Data: ___/___/2026
+- Situação: [ ] Aprovado  [ ] Aprovado com ressalvas  [ ] Não aprovado

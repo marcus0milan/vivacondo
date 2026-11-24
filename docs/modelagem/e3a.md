@@ -1,7 +1,8 @@
-# Diagramas UML — Sistema Inteligente de Gerenciamento de Condomínios
+# Diagramas UML — VivaCondo
 
-## Escopo da Sprint 1
-A Sprint 1 prioriza o núcleo operacional do condomínio: autenticação, cadastro e vinculação de usuários, gestão de unidades, acompanhamento de chamados e consulta do regimento interno. As entidades de áreas comuns e reservas já estão modeladas no DER para evolução posterior, mas o foco desta etapa está no fluxo de operação e acompanhamento do condomínio.
+**Equipe:** Guilherme Rastelli Fernandes (RA 2840482421047), Felipe Savegnago Pires (RA 2840482421034), Marcus Vinicius Milan (RA 2840482421001)
+
+Os diagramas abaixo separam as funcionalidades implementadas das previstas no backlog. O assistente consulta o texto extraído da tabela `regimento`, com fallback opcional para arquivo de texto legado.
 
 ## 1. Diagrama de Casos de Uso
 
@@ -9,141 +10,118 @@ A Sprint 1 prioriza o núcleo operacional do condomínio: autenticação, cadast
 flowchart LR
     Morador((Morador))
     Sindico((Síndico))
+    Visitante((Primeiro acesso))
 
-    UC1[Autenticar-se]
-    UC2[Cadastrar unidades e moradores]
-    UC3[Cadastrar áreas comuns]
-    UC4[Solicitar reserva de área comum]
-    UC5[Abrir chamado de manutenção]
-    UC6[Consultar regimento via assistente virtual]
-    UC7[Gerenciar chamados de manutenção]
-    UC8[Visualizar painel de chamados]
-    UC9[Atualizar regimento interno]
-    UC10[Consultar histórico de reservas e chamados]
-    UC11[Exportar relatório de chamados]
+    UC1[Configurar condomínio e primeiro síndico]
+    UC2[Autenticar-se]
+    UC3[Gerenciar unidades e moradores]
+    UC4[Gerenciar áreas comuns]
+    UC5[Consultar áreas comuns]
+    UC6[Solicitar reserva]
+    UC7[Abrir chamado de manutenção]
+    UC8[Consultar regimento pelo assistente]
+    UC9[Gerenciar chamados]
+    UC10[Consultar painel de chamados]
+    UC11[Atualizar regimento por PDF]
+    UC12[Consultar histórico pessoal]
 
-    Morador --> UC1
-    Morador --> UC4
+    Visitante --> UC1
+    Morador --> UC2
     Morador --> UC5
     Morador --> UC6
-    Morador --> UC10
-
-    Sindico --> UC1
+    Morador --> UC7
+    Morador --> UC8
     Sindico --> UC2
     Sindico --> UC3
-    Sindico --> UC7
-    Sindico --> UC8
+    Sindico --> UC4
+    Sindico --> UC5
     Sindico --> UC9
+    Sindico --> UC10
     Sindico --> UC11
+    Morador --> UC12
 ```
 
 ## 2. Diagrama de Classes
 
 ```mermaid
-class Usuario {
-    +id: int
-    +nome: string
-    +email: string
-    +senhaHash: string
-    +perfil: enum
-}
+classDiagram
+    class Usuario {
+        +id: int
+        +nome: string
+        +email: string
+        +senhaHash: string
+        +perfil: string
+    }
+    class Condominio {
+        +id: int
+        +nome: string
+        +endereco: string
+    }
+    class Unidade {
+        +id: int
+        +bloco: string
+        +numero: string
+    }
+    class Sindico
+    class Morador {
+        +cpf: string
+    }
+    class AreaComum {
+        +id: int
+        +nome: string
+        +capacidadeMaxima: int
+        +horarioLimiteUso: time
+    }
+    class Reserva {
+        +id: int
+        +data: date
+        +horaInicio: time
+        +horaFim: time
+        +status: string
+    }
+    class Chamado {
+        +id: int
+        +categoria: string
+        +localizacao: string
+        +descricao: string
+        +status: string
+        +dataAbertura: datetime
+        +observacaoSindico: string
+    }
+    class Regimento {
+        +nomeArquivo: string
+        +numeroPaginas: int
+        +atualizadoEm: datetime
+    }
+    class AssistenteRegimento {
+        +consultar(pergunta: string) string
+    }
 
-class Condomínio {
-    +id: int
-    +nome: string
-    +endereco: string
-}
-
-class Unidade {
-    +id: int
-    +bloco: string
-    +numero: string
-}
-
-class Morador {
-    +id: int
-    +cpf: string
-    +nome: string
-}
-
-class AreaComum {
-    +id: int
-    +nome: string
-    +capacidadeMaxima: int
-    +horarioLimiteUso: time
-}
-
-class Reserva {
-    +id: int
-    +data: date
-    +horaInicio: time
-    +horaFim: time
-    +status: enum
-}
-
-class Chamado {
-    +id: int
-    +categoria: string
-    +localizacao: string
-    +descricao: string
-    +status: enum
-    +observacao: string
-    +justificativaCancelamento: string
-    +dataAbertura: datetime
-}
-
-class Regimento {
-    +id: int
-    +nomeArquivo: string
-    +caminhoArquivo: string
-    +dataAtualizacao: datetime
-}
-
-class AssistenteVirtual {
-    +consultarRegimento(pergunta: string) string
-}
-
-class Historico {
-    +id: int
-    +tipo: enum
-    +data: datetime
-    +status: enum
-}
-
-class Sindico {
-    +id: int
-    +nome: string
-}
-
-Usuario <|-- Morador
-Usuario <|-- Sindico
-
-Condomínio "1" -- "N" Unidade : possui
-Unidade "1" -- "N" Morador : vincula
-Condomínio "1" -- "N" AreaComum : disponibiliza
-Morador "1" -- "N" Reserva : solicita
-AreaComum "1" -- "N" Reserva : recebe
-Morador "1" -- "N" Chamado : abre
-Sindico "1" -- "N" Chamado : gerencia
-Condomínio "1" -- "N" Chamado : possui
-Condomínio "1" -- "N" Regimento : possui
-Regimento "1" -- "1" AssistenteVirtual : fornece contexto
-Morador "1" -- "N" Historico : consulta
-Reserva "1" -- "N" Historico : registra
-Chamado "1" -- "N" Historico : registra
+    Usuario "1" -- "0..1" Sindico : perfil
+    Usuario "1" -- "0..1" Morador : perfil
+    Condominio "1" -- "0..*" Unidade : possui
+    Condominio "1" -- "0..*" AreaComum : disponibiliza
+    Condominio "1" -- "0..*" Chamado : recebe
+    Condominio "1" -- "0..1" Regimento : possui
+    Unidade "1" -- "0..*" Morador : vincula
+    Morador "1" -- "0..*" Reserva : solicita
+    AreaComum "1" -- "0..*" Reserva : recebe
+    Morador "1" -- "0..*" Chamado : abre
+    AssistenteRegimento ..> Usuario : atende perguntas
 ```
 
 ## 3. Rastreabilidade — caso de uso → história do backlog
-| Caso de uso | História(s) relacionada(s) (E2) |
-|---|---|
-| Autenticar-se | #1 |
-| Cadastrar unidades e moradores | #2 |
-| Cadastrar áreas comuns | #3 |
-| Solicitar reserva de área comum | #4 |
-| Abrir chamado de manutenção | #5 |
-| Consultar regimento via assistente virtual | #6 |
-| Gerenciar chamados de manutenção | #7 |
-| Visualizar painel de chamados | #8 |
-| Atualizar regimento interno | #9 |
-| Consultar histórico de reservas e chamados | #10 |
-| Exportar relatório de chamados | #11 |
+
+| Caso de uso | História (E2) | Situação no código |
+|---|---:|---|
+| Autenticar-se | #1 | Implementado |
+| Gerenciar unidades e moradores | #2 | Implementado |
+| Gerenciar áreas comuns | #3 | Implementado |
+| Solicitar reserva | #4 | Implementado |
+| Abrir chamado de manutenção | #5 | Implementado |
+| Consultar regimento pelo assistente | #6 | Implementado; depende de arquivo e chave configurados |
+| Gerenciar chamados | #7 | Implementado no código nesta revisão; validação integrada pendente |
+| Consultar painel agregado | #8 | Implementado com `GROUP BY` no PostgreSQL; validação integrada pendente |
+| Atualizar regimento por PDF | #9 | Implementado com extração de texto e persistência no PostgreSQL; validação integrada pendente |
+| Consultar histórico | #10 | Implementado com filtro pelo usuário autenticado; validação integrada pendente |
+| Exportar relatório | #11 | Não implementado no backend |

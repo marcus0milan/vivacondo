@@ -1,3 +1,8 @@
+-- VivaCondo — schema PostgreSQL aplicado pela API na inicialização.
+-- Equipe: Guilherme Rastelli Fernandes (RA 2840482421047),
+-- Felipe Savegnago Pires (RA 2840482421034),
+-- Marcus Vinicius Milan (RA 2840482421001).
+-- O primeiro condomínio e o primeiro síndico são criados por /api/setup.
 CREATE OR REPLACE FUNCTION cpf_valido(valor TEXT)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
@@ -106,10 +111,21 @@ CREATE TABLE IF NOT EXISTS chamado (
   descricao TEXT NOT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'ABERTO'
     CHECK (status IN ('ABERTO', 'EM_ANDAMENTO', 'CONCLUIDO', 'CANCELADO')),
+  observacao_sindico TEXT NOT NULL DEFAULT '',
   data_abertura TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_chamado_morador_data
   ON chamado (morador_id, data_abertura DESC);
 
+ALTER TABLE chamado
+  ADD COLUMN IF NOT EXISTS observacao_sindico TEXT NOT NULL DEFAULT '';
 
+CREATE TABLE IF NOT EXISTS regimento (
+  condominio_id INT PRIMARY KEY REFERENCES condominio(id) ON DELETE CASCADE,
+  nome_arquivo VARCHAR(255) NOT NULL,
+  conteudo_pdf BYTEA NOT NULL,
+  texto_extraido TEXT NOT NULL,
+  numero_paginas INT NOT NULL CHECK (numero_paginas BETWEEN 1 AND 300),
+  atualizado_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

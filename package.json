@@ -1,0 +1,12 @@
+{
+  "name": "vivacondo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "jest --runInBand",
+    "test:coverage": "jest --runInBand --coverage --collectCoverageFrom=frontend/vivacondo-app.js"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
